@@ -14,9 +14,11 @@ public class Order
         Id = id;
         TimeReceived = timeReceived;
     }
-
-    void ModifyIceCream(int)
+    
+    // Need to edit the property
+    void ModifyIceCream(int i)
     {
+        IceCream chosenIceCream = IceCreamList[i - 1];
         
     }
 
@@ -28,6 +30,23 @@ public class Order
     public void DeleteIceCream(int index)
     {
         IceCreamList.RemoveAt(index);
+    }
+    
+    // Not sure if working, need to test
+    public double CalculateTotal()
+    {
+        double total = 0;
+        foreach (IceCream ic in IceCreamList)
+        {
+            total += ic.CalculatePrice();
+        }
+
+        return total;
+    }
+
+    public override string ToString()
+    {
+        return $"ID: {Id} | Time Received: {TimeReceived:MM/dd/yyyy} | ";
     }
     
 }
