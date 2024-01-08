@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\eason\\OneDrive\\Desktop\\Week14\\Icecream\\Icecream\\Icecream.csproj",
+      "projectUniqueName": "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj",
       "projectName": "Icecream",
-      "projectPath": "C:\\Users\\eason\\OneDrive\\Desktop\\Week14\\Icecream\\Icecream\\Icecream.csproj",
+      "projectPath": "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj",
       "packagesPath": "C:\\Users\\eason\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\eason\\OneDrive\\Desktop\\Week14\\Icecream\\Icecream\\obj\\",
+      "outputPath": "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
