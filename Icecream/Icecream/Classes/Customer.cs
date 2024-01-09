@@ -25,7 +25,6 @@ public class Customer
         OrderHistory = new List<Order>();
         Rewards = new PointCard();
     }
-
     public Order MakeOrder()
     {
         return null;

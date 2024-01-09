@@ -8,7 +8,7 @@ public class PointCard
 {
     public int Points { get; set; }
     public int PunchCard { get; set; }
-    public string Tier { get; set; }
+    public string Tier { get; set; } = "Ordinary";
     
     public PointCard(){}
 
@@ -16,12 +16,21 @@ public class PointCard
     {
         Points = points;
         PunchCard = punchCard;
-        string Tier = "Ordinary";
     }
 
     public void AddPoints(int price)
     {
         Points += Convert.ToInt32(Math.Floor(price * 0.72));
+        
+        if (Points >= 50 || Points < 100)
+        {
+            Tier = "Silver";
+        }
+        
+        else if (Points >= 100)
+        {
+            Tier = "Gold";
+        }
     }
 
     public void RedeemPoints(int price)
@@ -48,8 +57,7 @@ public class PointCard
         if (PunchCard % 11 == 0)
         {
             Console.WriteLine("Your 11th Ice-cream is free.");
-            PunchCard = 0;
-        }
+            PunchCard = 0; }
 
         else
         {

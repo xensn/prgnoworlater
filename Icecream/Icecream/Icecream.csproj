@@ -11,6 +11,10 @@
     <Content Include="bin\Debug\net6.0\customers.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="bin\Debug\net6.0\pointcard.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bin\Debug\net6.0\pointcard.txt" />
   </ItemGroup>
 
 </Project>
