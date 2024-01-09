@@ -20,7 +20,7 @@ public class Waffle:IceCream
             _ => 9.5 + Toppings.Count
         };
 
-        if (WaffleFlavour != "Original")
+        if (WaffleFlavour != "original")
         {
             price += 3;
         }

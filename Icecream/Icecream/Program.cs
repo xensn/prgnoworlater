@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Drawing;
+using System.Formats.Asn1;
 using System.Text.RegularExpressions;
 
 namespace Icecream
@@ -9,12 +10,12 @@ namespace Icecream
         static void Main(string[] args)
         {
             Queue<Order> queueOrder = new Queue<Order>();
-            Queue<Customer> customerQueue = new Queue<Customer>();
+            Queue<Customer> goldQueue = new Queue<Customer>();
             
-            AllCustomersInfo();
-            RegisterCustomer();
-
-            Random random = new Random();
+            //AllCustomersInfo();
+            //RegisterCustomer();
+            CreateOrder();
+            
             
             // Editing the Point Card File
             // Write new data to pointcard.csv
@@ -99,7 +100,7 @@ namespace Icecream
                         Console.Write("Enter your Name: ");
                         name = Console.ReadLine();
                         
-                        // Check if integers are in userinput
+                        // Check if integers are in user input
                         Regex numbersRegex = new Regex(@"\d");
                         if (numbersRegex.IsMatch(name))
                         {
@@ -209,6 +210,254 @@ namespace Icecream
                 Console.WriteLine("You have registered an account already");
 
 
+            }
+            
+            // 4) Create a customer's order
+            void CreateOrder()
+            {
+                // Display all customer info
+                AllCustomersInfo();
+
+                while (true)
+                {
+                    // Data validation for customer id
+                    try
+                    {
+                        Console.Write("Enter customer id: ");
+                        string? id = Console.ReadLine();
+                        
+                        // Open file to find customers
+                        bool idExist = false;
+                        using (StreamReader sr = new StreamReader("customers.csv"))
+                        {
+                            string? s = sr.ReadLine();
+
+                            while ((s = sr.ReadLine()) != null)
+                            {
+                                string[] lines = s.Split(',');
+                                // Check if the id is existing
+                                if (lines[1] == Convert.ToString(id))
+                                {
+                                    idExist = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Not existing, it will give user an error
+                        if (!idExist)
+                        {
+                            throw new Exception("Customer entered does not valid.");
+                        }
+                        break;
+                    }
+
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                
+                // Create new Order
+                Random random = new Random();
+                int randomId = random.Next();
+                // I need to check if the id is already an existing order
+                Order newOrder = new Order(randomId, DateTime.Now);
+                
+                
+                // Create new Flavours
+                string? options = "";
+                int scoops = 0;
+                List<Flavour> flavourList = new List<Flavour>();
+                List<Topping> toppingList = new List<Topping>();
+                bool dippedChocolate = false;
+                string? waffleFlavour = "";
+
+                List<string> optionMenu = new List<string>() { "cup", "cone", "waffle" };
+                List<string> waffleMenu = new List<string>() { "original", "red velvet", "charcoal", "pandan waffle" };
+                while (true)
+                {
+                    // Data validation for options
+                    try
+                    {
+                        Console.WriteLine($"Options: {string.Join(", ", optionMenu)}");
+                        Console.Write("Enter your options: ");
+                        options = Console.ReadLine()?.ToLower();
+                        
+                        // Check if the input is any of the provided option
+                        if (!optionMenu.Contains(options))
+                        {
+                            throw new Exception("Please enter a valid option.");
+                        }
+                        
+                        // If Option is cone, Dipped chocolate is an option, so we need to ask the user if they want it or not
+                        if (options == "cone")
+                        {
+                            Console.Write("Do you want dipped Chocolate(y/n): ");
+                            string? chocolate = Console.ReadLine()?.ToLower();
+
+                            if (chocolate != "y" && chocolate != "n")
+                            {
+                                throw new Exception("Please enter y(yes) or n(no)");
+                            }
+
+                            if (chocolate == "y")
+                            {
+                                dippedChocolate = true;
+                            }
+                        }
+
+                        else if (options == "waffle")
+                        {
+                            Console.WriteLine($"Waffle Flavour: {string.Join(", ", waffleMenu)}");
+                            Console.Write("Choose a waffle flavour: ");
+                            waffleFlavour = Console.ReadLine()?.ToLower();
+
+                            if (!waffleMenu.Contains(waffleFlavour))
+                            {
+                                throw new Exception("Please choose a waffle flavour from the menu");
+                            }
+                            
+                        }
+
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                
+                while (true)
+                {
+                    // Data validation for scoops
+                    try
+                    {
+                        Console.Write("Enter number of scoops(1-3): ");
+                        scoops = Convert.ToInt32(Console.ReadLine());
+                        
+                        // This is check if they put 1-3 scoops or not
+                        if (scoops > 3 || scoops < 1)
+                        {
+                            throw new Exception("You can only choose 1 to 3 scoops.");
+                        }
+
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                
+                // Variables to use
+                List<string> regularFlavourMenu = new List<string>(){"vanilla", "chocolate", "strawberry"};
+                List<string> premiumFlavourMenu = new List<string>() {"durian", "ube", "sea salt"};
+                int quantity = 0;
+                string flavour = "";
+                int q = 0;
+                // Data validation for Flavours
+                Console.WriteLine($"Regular Flavours: {string.Join(", ", regularFlavourMenu)}  \nPremium Flavours: {string.Join(", ", premiumFlavourMenu)}");
+                for (int i = 0; i < scoops; i++)
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write($"{i + 1}. Choose flavours: ");
+                            flavour = Console.ReadLine().ToLower();
+                            if (!regularFlavourMenu.Contains(flavour) &&
+                                !premiumFlavourMenu.Contains(flavour))
+                            {
+                                throw new Exception("Choose the existing flavours.");
+                            }
+                        
+                        
+                            Console.Write("Enter the amount: ");
+                            quantity = Convert.ToInt32(Console.ReadLine());
+                            
+                            Regex letterRegex = new Regex(@"[a-zA-Z]");
+                            if (letterRegex.IsMatch(Convert.ToString(quantity)))
+                            {
+                                throw new Exception("It must be a integer.");
+                            }
+                            
+                            if (quantity > scoops)
+                            {
+                                throw new Exception($"You only have {scoops} scoops. Please do not enter more than that");
+                            }
+                            
+                            Flavour newFlavour = new Flavour(flavour, premiumFlavourMenu.Contains(flavour.ToLower()),
+                                quantity);
+                            flavourList.Add(newFlavour);
+                            break;
+
+                        }
+                        
+                        catch (IndexOutOfRangeException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                        
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                        
+                        // Create new flavour class
+                    }
+                    
+                }
+
+                List<string> toppingMenu = new List<string>() {"sprinkles", "mochi", "sago", "oreos" };
+                while (true)
+                {
+                    try
+                    {
+                        Console.Write("Number of toppings(0-4): ");
+                        int numberToppings = Convert.ToInt32(Console.ReadLine());
+
+                        for (int i = 0; i < numberToppings; i++)
+                        {
+                            Console.WriteLine($"Toppings: {string.Join(", ", toppingMenu)}");
+                            Console.Write($"Topping {i + 1}: ");
+                            string? topping = Console.ReadLine()?.ToLower();
+
+                            if (!toppingMenu.Contains(topping))
+                            {
+                                throw new Exception("Please enter a topping in the menu");
+                            }
+
+                            toppingMenu.Remove(topping);
+                            Topping newTopping = new Topping(topping);
+                            toppingList.Add(newTopping);
+
+                        }
+
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                
+                // Create the IceCream
+                if (options == "cone")
+                {
+                    Cone newCone = new Cone(options, scoops, flavourList, toppingList, dippedChocolate);
+                }
+                
+                else if (options == "cup")
+                {
+                    Cup newCup = new Cup(options, scoops, flavourList, toppingList);
+                }
+
+                else
+                {
+                    Waffle newWaffle = new Waffle(options, scoops, flavourList, toppingList, waffleFlavour);
+                }
+                
             }
             
             // 5) Display order details of a customer
