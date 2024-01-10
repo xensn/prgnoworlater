@@ -21,6 +21,6 @@ public abstract class IceCream
 
     public override string ToString()
     {
-        return $"Option: {Option} | Scoops: {Scoops} | Flavours: {string.Join(",", Flavours)} | Toppings: {string.Join(",", Toppings)}";
+        return $"Option: {Option} | Scoops: {Scoops} | Flavours: {string.Join(" | ", Flavours)} | Toppings: {string.Join(", ", Toppings)}";
     }
 }

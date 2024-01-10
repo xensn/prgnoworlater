@@ -17,6 +17,6 @@ public class Flavour
 
     public override string ToString()
     {
-        return $"Type: {Type} | Premium: {Premium} | Quantity: {Quantity}";
+        return $"[Type: {Type} | Premium: {Premium} | Quantity: {Quantity}]";
     }
 }
