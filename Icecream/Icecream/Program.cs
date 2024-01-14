@@ -9,59 +9,15 @@ namespace Icecream
     {
         static void Main(string[] args)
         {
-            Queue<Order> queueOrder = new Queue<Order>();
-            Queue<Customer> goldQueue = new Queue<Customer>();
-
+            Queue<Order> orderQueue = new Queue<Order>();
+            Queue<Order> goldOrderQueue = new Queue<Order>();
+            Customer? chosenCustomer;
+            
             //AllCustomersInfo();
             //RegisterCustomer();
-            CreateOrder();
-            CreateIceCream();
-
-
-            // Editing the Point Card File
-            // Write new data to pointcard.csv
-            void WriteToPointCard(int id, int points, string tier, int punchcard)
-            {
-                using (StreamWriter sw = File.AppendText("pointcard.csv"))
-                {
-
-                    sw.WriteLine($"{id},{points},{tier},{punchcard}");
-                }
-            }
-
-            // Editing the pointcard.csv data
-            void EditPointCard(int id, int points, string tier, int punchcard)
-            {
-                // Generates a temporary file
-                string tempFile = Path.GetTempFileName();
-
-                // Read the pointcard.csv and append all the lines is not changed to the temp file
-                using (var sr = new StreamReader("pointcard.csv"))
-                using (StreamWriter sw = File.AppendText(tempFile))
-                {
-                    string s;
-
-                    while ((s = sr.ReadLine()) != null)
-                    {
-                        string[] lines = s.Split(',');
-                        // Check which user's data to be changed
-                        if (lines[0] != Convert.ToString(id))
-                        {
-                            sw.WriteLine(s);
-                        }
-                    }
-
-                    sw.WriteLine($"{id},{points},{tier},{punchcard}");
-                }
-
-                File.Delete("pointcard.csv");
-                File.Move(tempFile, "pointcard.csv");
-            }
-
-
-
-
-
+            AddIceCreamToOrder();
+            
+            
             // Start of the Basic Features
             // 1) List all customers (Done)
             void AllCustomersInfo()
@@ -217,59 +173,18 @@ namespace Icecream
 
             }
 
-            
+
             // 4) Create a customer's order
             Order CreateOrder()
             {
                 // Display all customer info
                 AllCustomersInfo();
 
-                while (true)
-                {
-                    // Data validation for customer id
-                    try
-                    {
-                        Console.Write("Enter customer id: ");
-                        string? id = Console.ReadLine();
-
-                        // Open file to find customers
-                        bool idExist = false;
-                        using (StreamReader sr = new StreamReader("customers.csv"))
-                        {
-                            string? s = sr.ReadLine();
-
-                            while ((s = sr.ReadLine()) != null)
-                            {
-                                string[] lines = s.Split(',');
-                                // Check if the id is existing
-                                if (lines[1] == Convert.ToString(id))
-                                {
-                                    idExist = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        // Not existing, it will give user an error
-                        if (!idExist)
-                        {
-                            throw new Exception("Customer entered does not valid.");
-                        }
-
-                        break;
-                    }
-
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-
-                // Create new Order
-                Random random = new Random();
-                int randomId = random.Next();
-                // I need to check if the id is already an existing order
-                return (new Order(randomId, DateTime.Now));
+                // Choose which customer to add order
+                chosenCustomer = ChooseCustomer();
+                
+                // Create the order for the customer
+                return chosenCustomer?.MakeOrder();
             }
 
             // 4) Create the IceCream order
@@ -284,7 +199,8 @@ namespace Icecream
                 string? waffleFlavour = "";
 
                 List<string> optionMenu = new List<string>() { "cup", "cone", "waffle" };
-                List<string> waffleMenu = new List<string>() { "original", "red velvet", "charcoal", "pandan waffle" };
+                List<string> waffleMenu = new List<string>()
+                    { "original", "red velvet", "charcoal", "pandan waffle" };
                 while (true)
                 {
                     // Data validation for options
@@ -468,37 +384,119 @@ namespace Icecream
                 // Create the IceCream
                 if (options == "cone")
                 {
-                    return(new Cone(options, scoops, flavourList, toppingList, dippedChocolate));
+                    return (new Cone(options, scoops, flavourList, toppingList, dippedChocolate));
                 }
 
                 else if (options == "cup")
                 {
-                    return(new Cup(options, scoops, flavourList, toppingList));
+                    return (new Cup(options, scoops, flavourList, toppingList));
                 }
 
-                return(new Waffle(options, scoops, flavourList, toppingList, waffleFlavour));
+                return (new Waffle(options, scoops, flavourList, toppingList, waffleFlavour));
 
             }
-            
+
             // 4) Add IceCream into customer's order
             void AddIceCreamToOrder()
             {
                 Order ordered = CreateOrder();
                 IceCream iceCream = CreateIceCream();
-                
-                ordered.AddIceCream(iceCream);
 
-                string anotherOrder = "";
+                ordered.AddIceCream(iceCream);
+                
                 while (true)
                 {
                     try
                     {
-                        Console.Write("Would you like to add another ice cream to the order? (Y/N)");
-                        anotherOrder = Console.ReadLine()?.ToLower();
+                        Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
+                        string? anotherOrder = Console.ReadLine()?.ToLower();
 
-                        if (anotherOrder != "y" || anotherOrder != "n")
+                        if (anotherOrder != "y" && anotherOrder != "n")
                         {
                             throw new Exception("Please enter yes[Y] and no[N]");
+                        }
+
+                        if (anotherOrder == "y")
+                        {
+                            iceCream = CreateIceCream();
+
+                            ordered.AddIceCream(iceCream);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                chosenCustomer!.CurrentOrder = ordered;
+                chosenCustomer.OrderHistory.Add(ordered);
+                using (StreamReader sr = new StreamReader("pointcard.csv"))
+                {
+                    string? s = sr.ReadLine();
+
+                    while ((s = sr.ReadLine()) != null)
+                    {
+                        string[] lines = s.Split(',');
+                        // Find Member's Point Card, to check if they are Gold member.
+                        if (Convert.ToString(chosenCustomer.Memberid) != lines[0]) continue;
+                        chosenCustomer.Rewards =
+                            new PointCard(Convert.ToInt32(lines[1]), Convert.ToInt32(lines[3]));
+                        if (chosenCustomer.Rewards.Tier == "Gold")
+                        {
+                            goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
+                            break;
+                        }
+                        orderQueue.Enqueue(ordered);
+                    }
+                }
+                
+                Console.WriteLine(chosenCustomer);
+            }
+
+
+            // 5) Display order details of a customer
+            void OrderDetails()
+            {
+            }
+
+            // Choose which customer to append data inside.
+            Customer? ChooseCustomer()
+            {
+                string? id = "";
+                while (true)
+                {
+                    // Data validation for customer id
+                    try
+                    {
+                        Console.Write("Enter customer id: ");
+                        id = Console.ReadLine();
+
+                        // Open file to find customers
+                        bool idExist = false;
+                        using (StreamReader sr = new StreamReader("customers.csv"))
+                        {
+                            string? s = sr.ReadLine();
+
+                            while ((s = sr.ReadLine()) != null)
+                            {
+                                string[] lines = s.Split(',');
+                                // Check if the id is existing
+                                if (lines[1] == Convert.ToString(id))
+                                {
+                                    idExist = true;
+                                    return new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
+                                }
+                            }
+                        }
+
+                        // Not existing, it will give user an error
+                        if (!idExist)
+                        {
+                            throw new Exception("Customer entered does not valid.");
                         }
 
                         break;
@@ -509,23 +507,48 @@ namespace Icecream
                     }
                 }
 
-                while (true)
-                {
-                    if (anotherOrder == "y")
-                    {
-                        ordered = CreateOrder();
-                        iceCream = CreateIceCream();
-                
-                        ordered.AddIceCream(iceCream);
-                    }   
-                }
+                return null;
             }
             
-
-            // 5) Display order details of a customer
-                void OrderDetails()
+            // Editing the Point Card File
+            // Write new data to pointcard.csv
+            void WriteToPointCard(int id, int points, string tier, int punchcard)
+            {
+                using (StreamWriter sw = File.AppendText("pointcard.csv"))
                 {
+
+                    sw.WriteLine($"{id},{points},{tier},{punchcard}");
                 }
+            }
+
+            // Editing the pointcard.csv data
+            void EditPointCard(int id, int points, string tier, int punchcard)
+            {
+                // Generates a temporary file
+                string tempFile = Path.GetTempFileName();
+
+                // Read the pointcard.csv and append all the lines is not changed to the temp file
+                using (var sr = new StreamReader("pointcard.csv"))
+                using (StreamWriter sw = File.AppendText(tempFile))
+                {
+                    string s;
+
+                    while ((s = sr.ReadLine()) != null)
+                    {
+                        string[] lines = s.Split(',');
+                        // Check which user's data to be changed
+                        if (lines[0] != Convert.ToString(id))
+                        {
+                            sw.WriteLine(s);
+                        }
+                    }
+
+                    sw.WriteLine($"{id},{points},{tier},{punchcard}");
+                }
+
+                File.Delete("pointcard.csv");
+                File.Move(tempFile, "pointcard.csv");
+            }
         }
     }
 }

@@ -48,7 +48,7 @@ public class Order
 
     public override string ToString()
     {
-        return $"ID: {Id} | Time Received: {TimeReceived:MM/dd/yyyy} | ";
+        return $"ID: {Id} | Time Received: {TimeReceived:MM/dd/yyyy} | IceCream: {string.Join(", ", IceCreamList)} ";
     }
     
 }

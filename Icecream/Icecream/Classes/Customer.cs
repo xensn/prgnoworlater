@@ -27,7 +27,11 @@ public class Customer
     }
     public Order MakeOrder()
     {
-        return null;
+        // Create new Order
+        Random random = new Random();
+        int randomId = random.Next();
+        // I need to check if the id is already an existing order
+        return (new Order(randomId, DateTime.Now));
     }
 
     public bool isBirthday()
@@ -42,6 +46,6 @@ public class Customer
 
     public override string ToString()
     {
-        return $"Name: {Name} | ID: {Memberid} | Dob: {Dob}";
+        return $"Name: {Name} | ID: {Memberid} | Dob: {Dob} | Current Order: {CurrentOrder} | Order History: {string.Join(", ", OrderHistory)} | Point Card: {Rewards}";
     }
 }
