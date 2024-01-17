@@ -14,10 +14,6 @@
     <Content Include="bin\Debug\net6.0\flavours.csv" />
     <Content Include="bin\Debug\net6.0\options.csv" />
     <Content Include="bin\Debug\net6.0\orders.csv" />
-    <Content Include="bin\Debug\net6.0\pointcard.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="bin\Debug\net6.0\pointcard.txt" />
     <Content Include="bin\Debug\net6.0\toppings.csv" />
   </ItemGroup>
 

@@ -13,17 +13,21 @@ namespace Icecream
             Queue<Order> orderQueue = new Queue<Order>();
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
-
+            
+            // Option 1:
             //AllCustomersInfo();
+            
+            
             //RegisterCustomer();
             AddIceCreamToOrder();
             
 
-            // Start of the Basic Features
+            // Start of the Basic Features  
             // 1) List all customers (Done)
             void AllCustomersInfo()
             {
                 // Header
+                Console.WriteLine("All Members Information\n----------------------");
                 Console.WriteLine($"{"Name",-10}{"MemberId",-10}DOB");
                 foreach (string[] elements in ReadFile("customers.csv"))
                 {
@@ -234,7 +238,6 @@ namespace Icecream
                 while (true)
                 {
 
-
                     bool anotherO = checkYesNoInput("Would you like to add another ice cream to the order?(y/n)");
                     if (anotherO)
                     {
@@ -244,31 +247,6 @@ namespace Icecream
                     }
 
                     break;
-                    try
-                    {
-                        Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
-                        string? anotherOrder = Console.ReadLine()?.ToLower();
-
-                        if (anotherOrder != "y" && anotherOrder != "n")
-                        {
-                            throw new Exception("Please enter yes[Y] and no[N]");
-                        }
-
-                        if (anotherOrder == "y")
-                        {
-                            iceCream = CreateIceCream();
-
-                            ordered.AddIceCream(iceCream);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
                 }
 
                 chosenCustomer!.CurrentOrder = ordered;
