@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.ComponentModel;
 using System.Drawing;
 using System.Formats.Asn1;
 using System.Text.RegularExpressions;
@@ -12,30 +13,21 @@ namespace Icecream
             Queue<Order> orderQueue = new Queue<Order>();
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
-            
+
             //AllCustomersInfo();
             //RegisterCustomer();
             AddIceCreamToOrder();
             
-            
+
             // Start of the Basic Features
             // 1) List all customers (Done)
             void AllCustomersInfo()
             {
-                using (StreamReader sr = new StreamReader("customers.csv"))
+                // Header
+                Console.WriteLine($"{"Name",-10}{"MemberId",-10}DOB");
+                foreach (string[] elements in ReadFile("customers.csv"))
                 {
-                    string? s = sr.ReadLine();
-                    if (s != null)
-                    {
-                        string[] heading = s.Split(',');
-                        Console.WriteLine("{0,-10}{1,-10}{2}", heading[0], heading[1], heading[2]);
-                    }
-
-                    while ((s = sr.ReadLine()) != null)
-                    {
-                        string[] lines = s.Split(',');
-                        Console.WriteLine($"{lines[0],-10}{lines[1],-10}{lines[2],-10}");
-                    }
+                    Console.WriteLine($"{elements[0],-10}{elements[1],-10}{elements[2]}");
                 }
             }
 
@@ -92,20 +84,13 @@ namespace Icecream
                         }
 
                         // To check if ID is already existing by comparing to the file.
-                        using (StreamReader sr = new StreamReader("customers.csv"))
+                        foreach (string[] lines in ReadFile("customers.csv"))
                         {
-                            string? s = sr.ReadLine();
-
-                            while ((s = sr.ReadLine()) != null)
+                            if (lines[1] == Convert.ToString(id))
                             {
-                                string[] lines = s.Split(',');
-                                if (lines[1] == Convert.ToString(id))
-                                {
-                                    throw new Exception("ID already exist, try again.");
-                                }
+                                throw new Exception("ID already exist, try again.");
                             }
                         }
-
                         break;
                     }
 
@@ -159,16 +144,10 @@ namespace Icecream
                 // Append information into customer.csv
                 using (StreamWriter sw = File.AppendText("customers.csv"))
                 {
-                    sw.WriteLine($"{name},{id},{dob.ToShortDateString()}");
+                    sw.WriteLine($"{name},{id},{dob.ToShortDateString()},{newCustomer.Rewards.Tier},{newCustomer.Rewards.Points},{newCustomer.Rewards.PunchCard}");
                 }
 
-                using (StreamWriter sw = File.AppendText("pointcard.csv"))
-                {
-                    sw.WriteLine(
-                        $"{newCustomer.Memberid},{newCustomer.Rewards.Points},{newCustomer.Rewards.Tier},{newCustomer.Rewards.PunchCard}");
-                }
-
-                Console.WriteLine("You have registered an account already");
+                Console.WriteLine("You have registered an account.");
 
 
             }
@@ -182,7 +161,7 @@ namespace Icecream
 
                 // Choose which customer to add order
                 chosenCustomer = ChooseCustomer();
-                
+
                 // Create the order for the customer
                 return chosenCustomer?.MakeOrder();
             }
@@ -190,212 +169,60 @@ namespace Icecream
             // 4) Create the IceCream order
             IceCream CreateIceCream()
             {
-                // Create new Flavours
-                string? options = "";
-                int scoops = 0;
-                List<Flavour> flavourList = new List<Flavour>();
-                List<Topping> toppingList = new List<Topping>();
-                bool dippedChocolate = false;
-                string? waffleFlavour = "";
+                string options = CheckUserInput(new List<string>() { "cup", "cone", "waffle" }, "Enter your options: ");
+                int scoops = checkIntInput("Enter number of scoops(1-3): ", 1, 3);
 
-                List<string> optionMenu = new List<string>() { "cup", "cone", "waffle" };
-                List<string> waffleMenu = new List<string>()
-                    { "original", "red velvet", "charcoal", "pandan waffle" };
-                while (true)
+                List<Flavour> flavourList = GetFlavours(scoops);
+                List<Topping> toppingList = GetToppings();
+                
+                bool dipppedChocolate = options == "cone" && checkYesNoInput("Do you want dipped chocolate(y/n): ");
+                string waffleFlavour = options == "waffle" ? CheckUserInput(new List<string>() { "original", "red velvet", "charcoal", "pandan" }, "Choose a waffle flavour: ") : "";
+
+                return (options switch
                 {
-                    // Data validation for options
-                    try
-                    {
-                        Console.WriteLine($"Options: {string.Join(" | ", optionMenu)}");
-                        Console.Write("Enter your options: ");
-                        options = Console.ReadLine()?.ToLower();
-
-                        // Check if the input is any of the provided option
-                        if (!optionMenu.Contains(options))
-                        {
-                            throw new Exception("Please enter a valid option.");
-                        }
-
-                        // If Option is cone, Dipped chocolate is an option, so we need to ask the user if they want it or not
-                        if (options == "cone")
-                        {
-                            Console.Write("Do you want dipped Chocolate(y/n): ");
-                            string? chocolate = Console.ReadLine()?.ToLower();
-
-                            if (chocolate != "y" && chocolate != "n")
-                            {
-                                throw new Exception("Please enter y(yes) or n(no)");
-                            }
-
-                            if (chocolate == "y")
-                            {
-                                dippedChocolate = true;
-                            }
-                        }
-
-                        else if (options == "waffle")
-                        {
-                            Console.WriteLine($"Waffle Flavour: {string.Join(" | ", waffleMenu)}");
-                            Console.Write("Choose a waffle flavour: ");
-                            waffleFlavour = Console.ReadLine()?.ToLower();
-
-                            if (!waffleMenu.Contains(waffleFlavour))
-                            {
-                                throw new Exception("Please choose a waffle flavour from the menu");
-                            }
-
-                        }
-
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-
-                while (true)
-                {
-                    // Data validation for scoops
-                    try
-                    {
-                        Console.Write("Enter number of scoops(1-3): ");
-                        scoops = Convert.ToInt32(Console.ReadLine());
-
-                        // This is check if they put 1-3 scoops or not
-                        if (scoops > 3 || scoops < 1)
-                        {
-                            throw new Exception("You can only choose 1 to 3 scoops.");
-                        }
-
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-
-                // Variables to use
-                List<string> regularFlavourMenu = new List<string>() { "vanilla", "chocolate", "strawberry" };
-                List<string> premiumFlavourMenu = new List<string>() { "durian", "ube", "sea salt" };
-                int quantity = 0;
-                string flavour = "";
-                int totalQuantity = 0;
-                // Data validation for Flavours
-                Console.WriteLine(
-                    $"Regular Flavours: {string.Join(", ", regularFlavourMenu)}  \nPremium Flavours: {string.Join(" | ", premiumFlavourMenu)}");
-                while (true)
-                {
-                    try
-                    {
-                        for (int i = 0; i < scoops; i++)
-                        {
-
-                            Console.Write($"Choose flavours {i + 1}: ");
-                            flavour = Console.ReadLine().ToLower();
-                            if (!regularFlavourMenu.Contains(flavour) &&
-                                !premiumFlavourMenu.Contains(flavour))
-                            {
-                                throw new Exception("Choose the existing flavours.");
-                            }
-
-
-                            Console.Write("Enter the amount: ");
-                            quantity = Convert.ToInt32(Console.ReadLine());
-
-                            Regex letterRegex = new Regex(@"[a-zA-Z]");
-                            if (letterRegex.IsMatch(Convert.ToString(quantity)))
-                            {
-                                throw new Exception("It must be a integer.");
-                            }
-
-                            totalQuantity += quantity;
-                            if (quantity > scoops || totalQuantity > scoops)
-                            {
-                                totalQuantity -= quantity;
-                                throw new Exception(
-                                    $"You only have {scoops} scoops. Please do not enter more than that");
-                            }
-
-                            // Create new flavour class
-                            Flavour newFlavour = new Flavour(flavour,
-                                premiumFlavourMenu.Contains(flavour.ToLower()),
-                                quantity);
-                            flavourList.Add(newFlavour);
-
-                            if (quantity == scoops || scoops == totalQuantity)
-                            {
-                                break;
-                            }
-                        }
-
-                        break;
-
-                    }
-
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-
-
-
-                List<string> toppingMenu = new List<string>() { "sprinkles", "mochi", "sago", "oreos" };
-                while (true)
-                {
-                    try
-                    {
-                        Console.Write("Number of toppings(0-4): ");
-                        int numberToppings = Convert.ToInt32(Console.ReadLine());
-
-                        if (numberToppings is > 4 or < 0)
-                        {
-                            throw new Exception("Only 0 to 4 toppings are allowed");
-                        }
-
-
-                        for (int i = 0; i < numberToppings; i++)
-                        {
-                            Console.WriteLine($"Toppings: {string.Join(", ", toppingMenu)}");
-                            Console.Write($"Topping {i + 1}: ");
-                            string? topping = Console.ReadLine()?.ToLower();
-
-                            if (!toppingMenu.Contains(topping))
-                            {
-                                throw new Exception("Please enter a topping in the menu");
-                            }
-
-                            toppingMenu.Remove(topping);
-                            Topping newTopping = new Topping(topping);
-                            toppingList.Add(newTopping);
-
-                        }
-
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-
-                // Create the IceCream
-                if (options == "cone")
-                {
-                    return (new Cone(options, scoops, flavourList, toppingList, dippedChocolate));
-                }
-
-                else if (options == "cup")
-                {
-                    return (new Cup(options, scoops, flavourList, toppingList));
-                }
-
-                return (new Waffle(options, scoops, flavourList, toppingList, waffleFlavour));
-
+                    "cone" => new Cone(options,scoops,flavourList,toppingList,dipppedChocolate),
+                    "cup" => new Cup(options, scoops, flavourList, toppingList),
+                    "waffle" => new Waffle(options, scoops, flavourList, toppingList, waffleFlavour),
+                    _ => null
+                })!;
             }
+            
+            // Get the flavour for the scoops that the user wants
+            List<Flavour> GetFlavours(int scoops)
+            {
+                List<string> regularFlavours = new List<string>() { "vanilla", "chocolate", "strawberry" };
+                List<string> premiumFlavours = new List<string>() { "durian", "ube", "sea salt" };
 
+                List<Flavour> flavours = new List<Flavour>();
+
+                for (int i = 0; i < scoops; i++)
+                {
+                    string flavourChoice = CheckUserInput(regularFlavours.Concat(premiumFlavours).ToList(), $"Choose flavour for scoop {i + 1}: ");
+                    bool isPremium = premiumFlavours.Contains(flavourChoice);
+                    Flavour flavour = new Flavour(flavourChoice, isPremium, 1); // Assuming 1 quantity per scoop
+                    flavours.Add(flavour);
+                }
+
+                return flavours;
+            }
+            
+            // Get the topping that the user wants
+            List<Topping> GetToppings()
+            {
+                List<string> toppingMenu = new List<string>() { "sprinkles", "mochi", "sago", "oreos" };
+                List<Topping> toppings = new List<Topping>();
+
+                int numToppings = checkIntInput("Enter number of toppings (0-4): ", 0, 4);
+                for (int i = 0; i < numToppings; i++)
+                {
+                    string toppingChoice = CheckUserInput(toppingMenu, $"Choose topping {i + 1}: ");
+                    Topping topping = new Topping(toppingChoice);
+                    toppings.Add(topping);
+                }
+
+                return toppings;
+            }
+            
             // 4) Add IceCream into customer's order
             void AddIceCreamToOrder()
             {
@@ -403,9 +230,20 @@ namespace Icecream
                 IceCream iceCream = CreateIceCream();
 
                 ordered.AddIceCream(iceCream);
-                
+
                 while (true)
                 {
+
+
+                    bool anotherO = checkYesNoInput("Would you like to add another ice cream to the order?(y/n)");
+                    if (anotherO)
+                    {
+                        iceCream = CreateIceCream();
+
+                        ordered.AddIceCream(iceCream);
+                    }
+
+                    break;
                     try
                     {
                         Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
@@ -432,28 +270,20 @@ namespace Icecream
                         Console.WriteLine(ex.Message);
                     }
                 }
+
                 chosenCustomer!.CurrentOrder = ordered;
                 chosenCustomer.OrderHistory.Add(ordered);
-                using (StreamReader sr = new StreamReader("pointcard.csv"))
+                foreach (string[] lines in ReadFile("customers.csv"))
                 {
-                    string? s = sr.ReadLine();
-
-                    while ((s = sr.ReadLine()) != null)
+                    if (Convert.ToString(chosenCustomer.Memberid) != lines[0]) continue;
+                    if (lines[3] == "Gold")
                     {
-                        string[] lines = s.Split(',');
-                        // Find Member's Point Card, to check if they are Gold member.
-                        if (Convert.ToString(chosenCustomer.Memberid) != lines[0]) continue;
-                        chosenCustomer.Rewards =
-                            new PointCard(Convert.ToInt32(lines[1]), Convert.ToInt32(lines[3]));
-                        if (chosenCustomer.Rewards.Tier == "Gold")
-                        {
-                            goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
-                            break;
-                        }
-                        orderQueue.Enqueue(ordered);
+                        goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
+                        break;
                     }
+                    
+                    orderQueue.Enqueue(ordered);
                 }
-                
                 Console.WriteLine(chosenCustomer);
             }
 
@@ -463,6 +293,9 @@ namespace Icecream
             {
             }
 
+            
+            
+            // Additional Methods
             // Choose which customer to append data inside.
             Customer? ChooseCustomer()
             {
@@ -477,19 +310,16 @@ namespace Icecream
 
                         // Open file to find customers
                         bool idExist = false;
-                        using (StreamReader sr = new StreamReader("customers.csv"))
+                        foreach (string[] lines in ReadFile("customers.csv"))
                         {
-                            string? s = sr.ReadLine();
-
-                            while ((s = sr.ReadLine()) != null)
+                            if (lines[1] == Convert.ToString(id))
                             {
-                                string[] lines = s.Split(',');
-                                // Check if the id is existing
-                                if (lines[1] == Convert.ToString(id))
-                                {
-                                    idExist = true;
-                                    return new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
-                                }
+                                idExist = true;
+                                Customer tempCustomer = new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
+                                PointCard pointCard = new PointCard(Convert.ToInt32(lines[4]), Convert.ToInt32(lines[5]));
+                                pointCard.Tier = lines[3];
+                                tempCustomer.Rewards = pointCard;
+                                return tempCustomer;
                             }
                         }
 
@@ -506,19 +336,10 @@ namespace Icecream
                         Console.WriteLine(ex.Message);
                     }
                 }
+                
+                
 
                 return null;
-            }
-            
-            // Editing the Point Card File
-            // Write new data to pointcard.csv
-            void WriteToPointCard(int id, int points, string tier, int punchcard)
-            {
-                using (StreamWriter sw = File.AppendText("pointcard.csv"))
-                {
-
-                    sw.WriteLine($"{id},{points},{tier},{punchcard}");
-                }
             }
 
             // Editing the pointcard.csv data
@@ -548,6 +369,80 @@ namespace Icecream
 
                 File.Delete("pointcard.csv");
                 File.Move(tempFile, "pointcard.csv");
+            }
+            
+            IEnumerable<string[]> ReadFile(string filename)
+            {
+                using (StreamReader sr = new StreamReader(filename))
+                {
+                    string? s = sr.ReadLine();
+
+                    while ((s = sr.ReadLine()) != null)
+                    {
+                        string[] lines = s.Split(',');
+
+                        yield return lines;
+                    }
+                }
+            }
+            
+            // Check if user input is an existing item on the list (For Option 4)
+            string CheckUserInput(List<string> menu, string prompt)
+            {
+                while (true)
+                {
+                    try
+                    {
+                        Console.WriteLine(string.Join(" | ", menu));
+                        Console.Write(prompt);
+                        string? choice = Console.ReadLine()?.ToLower();
+                        if (!menu.Contains(choice))
+                        {
+                            throw new Exception("Invalid Choice, Please try again");
+                        }
+
+                        return choice;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+            
+            // Check if the user input only contains integer (For option 4)
+            int checkIntInput(string prompt, int min, int max)
+            {
+                while (true)
+                {
+                    try
+                    {
+                        Console.Write(prompt);
+                        if (!int.TryParse(Console.ReadLine(), out int result) || result < min || result > max)
+                        {
+                            throw new Exception($"Please enter a number between {min} to {max}.");
+                        }
+
+                        return result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+            
+            // Check if user input is y(yes) or n(no)
+            bool checkYesNoInput(string prompt)
+            {
+                while (true)
+                {
+                    Console.Write(prompt);
+                    string? input = Console.ReadLine()?.ToLower();
+                    if (input == "y") return true;
+                    if (input == "n") return false;
+                    Console.WriteLine("Invalid input. Please enter 'y' or 'n'.");
+                }
             }
         }
     }
