@@ -342,14 +342,14 @@ namespace Icecream
                 return null;
             }
 
-            // Editing the pointcard.csv data
-            void EditPointCard(int id, int points, string tier, int punchcard)
+            // Editing the customer.csv data
+            void EditCustomerFile(Customer c)
             {
                 // Generates a temporary file
                 string tempFile = Path.GetTempFileName();
 
                 // Read the pointcard.csv and append all the lines is not changed to the temp file
-                using (var sr = new StreamReader("pointcard.csv"))
+                using (var sr = new StreamReader("customers.csv"))
                 using (StreamWriter sw = File.AppendText(tempFile))
                 {
                     string s;
@@ -358,17 +358,17 @@ namespace Icecream
                     {
                         string[] lines = s.Split(',');
                         // Check which user's data to be changed
-                        if (lines[0] != Convert.ToString(id))
+                        if (lines[0] != Convert.ToString(c.Memberid))
                         {
                             sw.WriteLine(s);
                         }
                     }
 
-                    sw.WriteLine($"{id},{points},{tier},{punchcard}");
+                    sw.WriteLine($"{c.Name},{c.Memberid},{c.Dob},{c.Rewards.Tier},{c.Rewards.Points},{c.Rewards.PunchCard}");
                 }
 
-                File.Delete("pointcard.csv");
-                File.Move(tempFile, "pointcard.csv");
+                File.Delete("customers.csv");
+                File.Move(tempFile, "customers.csv");
             }
             
             IEnumerable<string[]> ReadFile(string filename)
