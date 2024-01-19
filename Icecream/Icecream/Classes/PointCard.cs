@@ -22,14 +22,14 @@ public class PointCard
     {
         Points += Convert.ToInt32(Math.Floor(price * 0.72));
         
-        if (Points >= 50 || Points < 100)
-        {
-            Tier = "Silver";
-        }
-        
-        else if (Points >= 100)
+        if (Points >= 100 && Tier != "Gold" )
         {
             Tier = "Gold";
+        }
+        
+        else if (Points >= 50 && Tier == "Ordinary")
+        {
+            Tier = "Silver";
         }
     }
 
