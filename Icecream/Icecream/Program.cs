@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Formats.Asn1;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
 
 namespace Icecream
 {
@@ -38,6 +39,23 @@ namespace Icecream
             // 2) List all current orders
             void AllCurrentOrders()
             {
+                // print out the current orders in normal order queue
+                Console.WriteLine("Orders from Normal Order Queue" +
+                                  "-------------------------------------------------------------------------------------------------");
+                foreach (Order order in orderQueue)
+                {
+                    Console.WriteLine(order.ToString());
+                }
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+
+                Console.WriteLine("Orders from Gold Order Queue" +
+                                  "-------------------------------------------------------------------------------------------------");
+                foreach (Order order in goldOrderQueue)
+                {
+                    Console.WriteLine(order.ToString());
+                }
+
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
             }
 
             // 3) Register a new Customer
@@ -422,6 +440,7 @@ namespace Icecream
                     Console.WriteLine("Invalid input. Please enter 'y' or 'n'.");
                 }
             }
+            
         }
     }
 }
