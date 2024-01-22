@@ -24,7 +24,7 @@ namespace Icecream
             // Option 3:
             RegisterCustomer();
             
-            // Option 4:
+            // Option 4: ?
             AddIceCreamToOrder();
             
             // Option 5:
@@ -309,9 +309,32 @@ namespace Icecream
                 ListOrder(chosencustomer.OrderHistory);
                 Console.WriteLine("-------------------------------------------------------------------------------------------------");
             }
+            
+            // 6) Modify order details
+            void ModifyOrderDetails()
+            {
+                // List the customers
+                AllCustomersInfo();
+                // Prompt the user to select a customer and retrieve the selected customer's current order 
+                Customer chosencustomer = ChooseCustomer();
+                // List all the ice cream objects contained in the order 
+                Console.WriteLine("Current Orders" +
+                                  "-------------------------------------------------------------------------------------------------");
+                Console.WriteLine(chosencustomer.CurrentOrder.ToString());
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                // Options 
+                bool whileloop = true;
+                // Option 1 - Choose an existing ice cream to modify
+                // Let the user select which ice cream to modify 
+                // Prompt the new information for the modifications they wish to make 
+                // Option 2 - Add on entirely new ice cream to the order 
+                // Create a new ice cream and add it to the order
+                // Option 3 - Choose and existing ice cream to delete from the order 
+                // Select the ice cream they want to remove but if there is only one in the order then got to display a message 
+            }
 
-            
-            
+
+
             // Additional Methods
             // Choose which customer to append data inside.
             Customer? ChooseCustomer()
