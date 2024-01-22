@@ -16,11 +16,21 @@ namespace Icecream
             Customer? chosenCustomer;
             
             // Option 1:
-            //AllCustomersInfo();
+            AllCustomersInfo();
             
+            // Option 2:
+            AllCurrentOrders();
             
-            //RegisterCustomer();
+            // Option 3:
+            RegisterCustomer();
+            
+            // Option 4:
             AddIceCreamToOrder();
+            
+            // Option 5:
+            OrderDetails();
+            
+            // Option 6:
             
 
             // Start of the Basic Features  
@@ -42,18 +52,12 @@ namespace Icecream
                 // print out the current orders in normal order queue
                 Console.WriteLine("Orders from Normal Order Queue" +
                                   "-------------------------------------------------------------------------------------------------");
-                foreach (Order order in orderQueue)
-                {
-                    Console.WriteLine(order.ToString());
-                }
+                ListOrder(orderQueue);
                 Console.WriteLine("-------------------------------------------------------------------------------------------------");
 
                 Console.WriteLine("Orders from Gold Order Queue" +
                                   "-------------------------------------------------------------------------------------------------");
-                foreach (Order order in goldOrderQueue)
-                {
-                    Console.WriteLine(order.ToString());
-                }
+                ListOrder(goldOrderQueue);
 
                 Console.WriteLine("-------------------------------------------------------------------------------------------------");
             }
@@ -287,6 +291,23 @@ namespace Icecream
             // 5) Display order details of a customer
             void OrderDetails()
             {
+                // List the customers 
+                AllCustomersInfo();
+                
+                // Prompt user to select a customer and retrieve the selected customer 
+                Customer chosencustomer = ChooseCustomer();
+                
+                // Retrieve all the order objects of the customer, pass and current
+                Console.WriteLine("Current Orders" +
+                                  "-------------------------------------------------------------------------------------------------");
+                Console.WriteLine(chosencustomer.CurrentOrder.ToString());
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                
+                // For each order, display all the details of the order including datetime recieved, datetime fullfilled(if applicable) and all icecream details associated with the order
+                Console.WriteLine("Past Orders" +
+                                  "-------------------------------------------------------------------------------------------------");
+                ListOrder(chosencustomer.OrderHistory);
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
             }
 
             
@@ -441,6 +462,15 @@ namespace Icecream
                 }
             }
             
+            // Listing the orders in both queue and list
+            void ListOrder(IEnumerable<Order> orderqueue)
+            {
+                foreach (Order order in orderqueue)
+                {
+                    Console.WriteLine(order.ToString());
+                }
+            }
+
         }
     }
 }
