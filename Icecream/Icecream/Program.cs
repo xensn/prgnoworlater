@@ -326,7 +326,7 @@ namespace Icecream
                 bool whileloop = true;
                 while (whileloop)
                 {
-                    Console.Writeline("Option 1 - Choose an existing ice cream to modify" +
+                    Console.WriteLine("Option 1 - Choose an existing ice cream to modify" +
                                       "Option 2 - Add an entirely new ice cream to your order" +
                                       "Option 3 - Choose an exisitng ice cream to delete from your order");
                     

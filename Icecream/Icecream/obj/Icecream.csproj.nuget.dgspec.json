@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\senth\\OneDrive - Ngee Ann Polytechnic\\Desktop\\programming 2 c#\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj": {}
+    "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj": {}
   },
   "projects": {
-    "C:\\Users\\senth\\OneDrive - Ngee Ann Polytechnic\\Desktop\\programming 2 c#\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj": {
+    "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\senth\\OneDrive - Ngee Ann Polytechnic\\Desktop\\programming 2 c#\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj",
+        "projectUniqueName": "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj",
         "projectName": "Icecream",
-        "projectPath": "C:\\Users\\senth\\OneDrive - Ngee Ann Polytechnic\\Desktop\\programming 2 c#\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj",
-        "packagesPath": "C:\\Users\\senth\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\senth\\OneDrive - Ngee Ann Polytechnic\\Desktop\\programming 2 c#\\prgnoworlater\\Icecream\\Icecream\\obj\\",
+        "projectPath": "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\Icecream.csproj",
+        "packagesPath": "C:\\Users\\eason\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\eason\\OneDrive\\Desktop\\Ongoing Assignment\\prgnoworlater\\Icecream\\Icecream\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\senth\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\eason\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -55,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
         }
       }
     }
