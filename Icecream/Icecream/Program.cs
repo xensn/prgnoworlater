@@ -399,7 +399,12 @@ namespace Icecream
                 // Read File
                 foreach (string[] elements in ReadFile("orders.csv"))
                 {
-                    //DateTime dateFulfilled = DateTime.Parse(string[])
+                    DateTime dateFulfilled = DateTime.Parse(elements[3]);
+
+                    if (elements[3].Contains(Convert.ToString(year)))
+                    {
+                        
+                    }
                 }
             }
 
@@ -567,7 +572,6 @@ namespace Icecream
                 bool isPremium = false;
                 List<Flavour> flavourList = new List<Flavour>();
                 List<Topping> toppingList = new List<Topping>();
-                bool dippedChocolate = false;
                 // Create Flavour Object
                 for (int i = 8; i < 11; i++)
                 {
