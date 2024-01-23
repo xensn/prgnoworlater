@@ -14,24 +14,24 @@ namespace Icecream
             Queue<Order> orderQueue = new Queue<Order>();
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
-            
+
             // Option 1:
             AllCustomersInfo();
-            
+
             // Option 2:
             AllCurrentOrders();
-            
+
             // Option 3:
             RegisterCustomer();
-            
+
             // Option 4: ?
             AddIceCreamToOrder();
-            
+
             // Option 5:
             OrderDetails();
-            
+
             // Option 6:
-            
+
 
             // Start of the Basic Features  
             // 1) List all customers (Done)
@@ -53,13 +53,15 @@ namespace Icecream
                 Console.WriteLine("Orders from Normal Order Queue" +
                                   "-------------------------------------------------------------------------------------------------");
                 ListOrder(orderQueue);
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
 
                 Console.WriteLine("Orders from Gold Order Queue" +
                                   "-------------------------------------------------------------------------------------------------");
                 ListOrder(goldOrderQueue);
 
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
             }
 
             // 3) Register a new Customer
@@ -117,6 +119,7 @@ namespace Icecream
                                 throw new Exception("ID already exist, try again.");
                             }
                         }
+
                         break;
                     }
 
@@ -170,7 +173,8 @@ namespace Icecream
                 // Append information into customer.csv
                 using (StreamWriter sw = File.AppendText("customers.csv"))
                 {
-                    sw.WriteLine($"{name},{id},{dob.ToShortDateString()},{newCustomer.Rewards.Tier},{newCustomer.Rewards.Points},{newCustomer.Rewards.PunchCard}");
+                    sw.WriteLine(
+                        $"{name},{id},{dob.ToShortDateString()},{newCustomer.Rewards.Tier},{newCustomer.Rewards.Points},{newCustomer.Rewards.PunchCard}");
                 }
 
                 Console.WriteLine("You have registered an account.");
@@ -200,19 +204,22 @@ namespace Icecream
 
                 List<Flavour> flavourList = GetFlavours(scoops);
                 List<Topping> toppingList = GetToppings();
-                
+
                 bool dipppedChocolate = options == "cone" && checkYesNoInput("Do you want dipped chocolate(y/n): ");
-                string waffleFlavour = options == "waffle" ? CheckUserInput(new List<string>() { "original", "red velvet", "charcoal", "pandan" }, "Choose a waffle flavour: ") : "";
+                string waffleFlavour = options == "waffle"
+                    ? CheckUserInput(new List<string>() { "original", "red velvet", "charcoal", "pandan" },
+                        "Choose a waffle flavour: ")
+                    : "";
 
                 return (options switch
                 {
-                    "cone" => new Cone(options,scoops,flavourList,toppingList,dipppedChocolate),
+                    "cone" => new Cone(options, scoops, flavourList, toppingList, dipppedChocolate),
                     "cup" => new Cup(options, scoops, flavourList, toppingList),
                     "waffle" => new Waffle(options, scoops, flavourList, toppingList, waffleFlavour),
                     _ => null
                 })!;
             }
-            
+
             // Get the flavour for the scoops that the user wants
             List<Flavour> GetFlavours(int scoops)
             {
@@ -223,7 +230,8 @@ namespace Icecream
 
                 for (int i = 0; i < scoops; i++)
                 {
-                    string flavourChoice = CheckUserInput(regularFlavours.Concat(premiumFlavours).ToList(), $"Choose flavour for scoop {i + 1}: ");
+                    string flavourChoice = CheckUserInput(regularFlavours.Concat(premiumFlavours).ToList(),
+                        $"Choose flavour for scoop {i + 1}: ");
                     bool isPremium = premiumFlavours.Contains(flavourChoice);
                     Flavour flavour = new Flavour(flavourChoice, isPremium, 1); // Assuming 1 quantity per scoop
                     flavours.Add(flavour);
@@ -231,7 +239,7 @@ namespace Icecream
 
                 return flavours;
             }
-            
+
             // Get the topping that the user wants
             List<Topping> GetToppings()
             {
@@ -248,7 +256,7 @@ namespace Icecream
 
                 return toppings;
             }
-            
+
             // 4) Add IceCream into customer's order
             void AddIceCreamToOrder()
             {
@@ -281,9 +289,10 @@ namespace Icecream
                         goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
                         break;
                     }
-                    
+
                     orderQueue.Enqueue(ordered);
                 }
+
                 Console.WriteLine(chosenCustomer);
             }
 
@@ -293,23 +302,25 @@ namespace Icecream
             {
                 // List the customers 
                 AllCustomersInfo();
-                
+
                 // Prompt user to select a customer and retrieve the selected customer 
                 Customer chosencustomer = ChooseCustomer();
-                
+
                 // Retrieve all the order objects of the customer, pass and current
                 Console.WriteLine("Current Orders" +
                                   "-------------------------------------------------------------------------------------------------");
                 Console.WriteLine(chosencustomer.CurrentOrder.ToString());
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
-                
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
+
                 // For each order, display all the details of the order including datetime recieved, datetime fullfilled(if applicable) and all icecream details associated with the order
                 Console.WriteLine("Past Orders" +
                                   "-------------------------------------------------------------------------------------------------");
                 ListOrder(chosencustomer.OrderHistory);
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
             }
-            
+
             // 6) Modify order details
             void ModifyOrderDetails()
             {
@@ -317,43 +328,62 @@ namespace Icecream
                 AllCustomersInfo();
                 // Prompt the user to select a customer and retrieve the selected customer's current order 
                 Customer chosencustomer = ChooseCustomer();
-                // List all the ice cream objects contained in the order 
-                Console.WriteLine("Current Orders" +
-                                  "-------------------------------------------------------------------------------------------------");
-                Console.WriteLine(chosencustomer.CurrentOrder.ToString());
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
-                // Options 
+                // input validation for the options
                 bool whileloop = true;
                 while (whileloop)
                 {
-                    Console.WriteLine("Option 1 - Choose an existing ice cream to modify" +
-                                      "Option 2 - Add an entirely new ice cream to your order" +
-                                      "Option 3 - Choose an exisitng ice cream to delete from your order");
-                    
-                    string opt = Console.ReadLine();
-                    switch (opt)
+                    // List all the ice cream objects contained in the order 
+                    Console.WriteLine("Current Orders" +
+                                      "-------------------------------------------------------------------------------------------------");
+                    List<IceCream> chosenicecreamlist = chosencustomer.CurrentOrder.IceCreamList;
+                    foreach (IceCream icecream in chosenicecreamlist)
                     {
-                        case "1" :
-                            break;
-                        case "2":
-                            break;
-                        case "3" :
-                            break;
+                        Console.WriteLine($"{chosenicecreamlist.IndexOf(icecream) + 1} {icecream.ToString()}");
                     }
-                    // Option 1 - Choose an existing ice cream to modify
-                    // Let the user select which ice cream to modify 
-                    // Prompt the new information for the modifications they wish to make 
-                    // Option 2 - Add on entirely new ice cream to the order 
-                    // Create a new ice cream and add it to the order
-                    // Option 3 - Choose an existing ice cream to delete from the order 
-                    // Select the ice cream they want to remove but if there is only one in the order then got to display a message 
-                }
 
+                    Console.WriteLine(
+                        "-------------------------------------------------------------------------------------------------");
+                    try
+                    {
+                        Console.WriteLine("Option 1 - Choose an existing ice cream to modify" +
+                                          "Option 2 - Add an entirely new ice cream to your order" +
+                                          "Option 3 - Choose an existing ice cream to delete from your order");
+                        int opt = Convert.ToInt32((Console.ReadLine()));
+                        if (opt > 0 && opt < 5)
+                        {
+                            throw new Exception("Please enter in a valid option!");
+                        }
+                        switch (opt)
+                        {
+                            case 1:
+                                try
+                                {
+                                    
+                                }
+                                catch
+                                {
+                                    
+                                }
+                                break;
+                            case 2:
+                                break;
+                            case 3:
+                                break;
+                            case 4:
+                                whileloop = false;
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
             }
 
 
 
-            // Additional Methods
+    // Additional Methods
             // Choose which customer to append data inside.
             Customer? ChooseCustomer()
             {
@@ -511,7 +541,7 @@ namespace Icecream
                     Console.WriteLine(order.ToString());
                 }
             }
-
+      
         }
     }
 }
