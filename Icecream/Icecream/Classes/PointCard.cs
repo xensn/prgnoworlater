@@ -54,10 +54,11 @@ public class PointCard
 
     public void Punch()
     {
-        if (PunchCard % 11 == 0)
+        if (PunchCard == 10)
         {
             Console.WriteLine("Your 11th Ice-cream is free.");
-            PunchCard = 0; }
+            PunchCard = 10; 
+        }
 
         else
         {
