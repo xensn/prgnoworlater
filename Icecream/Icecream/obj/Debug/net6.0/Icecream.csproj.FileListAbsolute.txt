@@ -14,3 +14,18 @@ C:\Users\senth\OneDrive - Ngee Ann Polytechnic\Desktop\programming 2 c#\prgnowor
 C:\Users\senth\OneDrive - Ngee Ann Polytechnic\Desktop\programming 2 c#\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.pdb
 C:\Users\senth\OneDrive - Ngee Ann Polytechnic\Desktop\programming 2 c#\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.genruntimeconfig.cache
 C:\Users\senth\OneDrive - Ngee Ann Polytechnic\Desktop\programming 2 c#\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\ref\Icecream.dll
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\bin\Debug\net6.0\Icecream.exe
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\bin\Debug\net6.0\bin\Debug\net6.0\customers.csv
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\bin\Debug\net6.0\Icecream.deps.json
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\bin\Debug\net6.0\Icecream.runtimeconfig.json
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\bin\Debug\net6.0\Icecream.dll
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\bin\Debug\net6.0\Icecream.pdb
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.AssemblyInfoInputs.cache
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.AssemblyInfo.cs
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.csproj.CoreCompileInputs.cache
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.dll
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\refint\Icecream.dll
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.pdb
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\Icecream.genruntimeconfig.cache
+C:\Users\eason\OneDrive\Desktop\Ongoing Assignment\prgnoworlater\Icecream\Icecream\obj\Debug\net6.0\ref\Icecream.dll
