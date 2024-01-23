@@ -16,49 +16,57 @@ namespace Icecream
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
             
-            int options = CheckIntInput("Enter an options: ", 0, 6);
-            while (true)
-            {
-                if (options == 1)
+            
+                while (true)
                 {
-                    Console.WriteLine("[1] Display all customers information");
-                    AllCustomersInfo();
-                }
-                
-                else if (options == 2)
-                {
-                    Console.WriteLine("[2] Display regular and gold member queue");
-                    AllCurrentOrders();
-                }
-                
-                else if (options == 3)
-                {
-                    Console.WriteLine("[3] Register a new customer");
-                    RegisterCustomer();
-                }
-                
-                else if (options == 4)
-                {
-                    Console.WriteLine("[4] Create a new order");
-                    AddIceCreamToOrder();
-                }
-                
-                else if (options == 5)
-                {
-                    Console.WriteLine("[5] Display order details of a customer");
-                    OrderDetails();
-                }
-                
-                else if (options == 6)
-                {
-                    Console.WriteLine("[6] Modify order details");
-                }
+                    Console.WriteLine();
+                    Console.WriteLine(" ---------------------------------------------");
+                    Console.WriteLine(" |        Ice Cream Shop Option Menu         |");
+                    Console.WriteLine(" ---------------------------------------------");
+                    Console.WriteLine(" | [1] Display all customers information     |");
+                    Console.WriteLine(" | [2] Display regular and gold member queue |");
+                    Console.WriteLine(" | [3] Register a new customer               |");
+                    Console.WriteLine(" | [4] Create a new order                    |");
+                    Console.WriteLine(" | [5] Display order details of a customer   |");
+                    Console.WriteLine(" | [0] Exit                                  |");
+                    Console.WriteLine(" ---------------------------------------------");
+                    int options = CheckIntInput("Enter an option: ", 0, 6);
+                    Console.WriteLine();
+                    
+                    if (options == 1)
+                    {
+                        AllCustomersInfo();
+                    }
+                    
+                    else if (options == 2)
+                    {
+                        AllCurrentOrders();
+                    }
+                    
+                    else if (options == 3)
+                    {
+                        RegisterCustomer();
+                    }
+                    
+                    else if (options == 4)
+                    {
+                        AddIceCreamToOrder();
+                    }
+                    
+                    else if (options == 5)
+                    {
+                        OrderDetails();
+                    }
+                    
+                    else if (options == 6)
+                    {
+                    }
 
-                else
-                {
-                    break;
+                    else
+                    {
+                        break;
+                    }
                 }
-            }
             
 
             // Start of the Basic Features  
@@ -560,7 +568,6 @@ namespace Icecream
                 List<Flavour> flavourList = new List<Flavour>();
                 List<Topping> toppingList = new List<Topping>();
                 bool dippedChocolate = false;
-                
                 // Create Flavour Object
                 for (int i = 8; i < 11; i++)
                 {
@@ -589,18 +596,25 @@ namespace Icecream
                 
                 if (line[4] == "Cup")
                 {
-                    IceCream coneIceCream = new Cup(line[4], Convert.ToInt32(line[5]), flavourList, toppingList);
+                    IceCream tempIceCream = new Cup(line[4], Convert.ToInt32(line[5]), flavourList, toppingList);
+                    return tempIceCream;
                 }
                 
                 else if (line[4] == "Cone")
                 {
-                    IceCream coneIceCream = new Cone(line[4], Convert.ToInt32(line[5]), flavourList, toppingList,
-                        bool.TryParse(line[6], out bool result));
+                    bool.TryParse(line[6], out bool result);
+                    IceCream tempIceCream = new Cone(line[4], Convert.ToInt32(line[5]), flavourList, toppingList, result);
+                    return tempIceCream;
+                }
+                
+                else if (line[4] == "Waffle")
+                {
+                    Waffle tempIceCream = new Waffle(line[4],Convert.ToInt32(line[5]), flavourList, toppingList, line[7]);
+                    return tempIceCream;
                 }
 
                 return null;
             }
-
         }
     }
 }
