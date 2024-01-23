@@ -16,21 +16,24 @@ namespace Icecream
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
             
-            
+                // Select them option
                 while (true)
                 {
                     Console.WriteLine();
-                    Console.WriteLine(" ---------------------------------------------");
-                    Console.WriteLine(" |        Ice Cream Shop Option Menu         |");
-                    Console.WriteLine(" ---------------------------------------------");
-                    Console.WriteLine(" | [1] Display all customers information     |");
-                    Console.WriteLine(" | [2] Display regular and gold member queue |");
-                    Console.WriteLine(" | [3] Register a new customer               |");
-                    Console.WriteLine(" | [4] Create a new order                    |");
-                    Console.WriteLine(" | [5] Display order details of a customer   |");
-                    Console.WriteLine(" | [0] Exit                                  |");
-                    Console.WriteLine(" ---------------------------------------------");
-                    int options = CheckIntInput("Enter an option: ", 0, 6);
+                    Console.WriteLine(" ---------------------------------------------------");
+                    Console.WriteLine(" |            Ice Cream Shop Option Menu           |");
+                    Console.WriteLine(" ---------------------------------------------------");
+                    Console.WriteLine(" | [1] Display all customers information           |");
+                    Console.WriteLine(" | [2] Display regular and gold member queue       |");
+                    Console.WriteLine(" | [3] Register a new customer                     |");
+                    Console.WriteLine(" | [4] Create a new order                          |");
+                    Console.WriteLine(" | [5] Display order details of a customer         |");
+                    Console.WriteLine(" | [6] Modify Order Details                        |");
+                    Console.WriteLine(" | [7] Process an order and checkout               |");
+                    Console.WriteLine(" | [8] Display Month & Yearly total charged amount |");
+                    Console.WriteLine(" | [0] Exit                                        |");
+                    Console.WriteLine(" ---------------------------------------------------");
+                    int options = CheckIntInput("Enter an option: ", 0, 8);
                     Console.WriteLine();
                     
                     if (options == 1)
@@ -60,6 +63,17 @@ namespace Icecream
                     
                     else if (options == 6)
                     {
+                        
+                    }
+                    
+                    else if (options == 7)
+                    {
+                        
+                    }
+                    
+                    else if (options == 8)
+                    {
+                        TotalPriceBreakdown();
                     }
 
                     else
@@ -185,11 +199,6 @@ namespace Icecream
                         break;
                     }
                     // Check if they enter valid date
-                    catch (FormatException)
-                    {
-                        Console.WriteLine("Enter a valid date");
-                    }
-
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
@@ -393,19 +402,45 @@ namespace Icecream
             // Advanced Feature (b)
             void TotalPriceBreakdown()
             {
+                double total = 0;
                 // Prompt user for the year.
-                int year = CheckIntInput("Enter the year for total charges breakdown: ", 1, 10000);
+                int year = CheckIntInput("Enter the year: ", 1, 10000);
+                Console.WriteLine();
+                
+                // List of Months and keep track of the total of each month
+                List<string> monthList = new List<string>(){"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+                List<double> monthTotalList = new List<double>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
                 
                 // Read File
                 foreach (string[] elements in ReadFile("orders.csv"))
                 {
+                    // Find the date of the line
                     DateTime dateFulfilled = DateTime.Parse(elements[3]);
-
-                    if (elements[3].Contains(Convert.ToString(year)))
+                    
+                    // Check if Year matches
+                    if (dateFulfilled.Year == year)
                     {
+                        // Convert the Line of text to IceCream 
+                        IceCream tempIceCream = ConvertOrderCsv(elements);
                         
+                        // Loop through 
+                        for (int i = 0; i < 12; i++)
+                        {
+                            if (dateFulfilled.Month == i+1)
+                            {
+                                monthTotalList[i] += tempIceCream.CalculatePrice();
+                            }
+                        }
+                        total += tempIceCream.CalculatePrice();
                     }
                 }
+                
+                for (int i = 0; i < 12; i++)
+                {
+                    Console.WriteLine($"{monthList[i]} {year}:   ${monthTotalList[i]}");
+                }
+                Console.WriteLine();
+                Console.WriteLine($"Total:     ${total}");
             }
 
             // Additional Methods
