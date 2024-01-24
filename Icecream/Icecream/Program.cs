@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Formats.Asn1;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 
@@ -15,22 +16,71 @@ namespace Icecream
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
             
-            // Option 1:
-            AllCustomersInfo();
-            
-            // Option 2:
-            AllCurrentOrders();
-            
-            // Option 3:
-            RegisterCustomer();
-            
-            // Option 4: ?
-            AddIceCreamToOrder();
-            
-            // Option 5:
-            OrderDetails();
-            
-            // Option 6:
+                // Select them option
+                while (true)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine(" ---------------------------------------------------");
+                    Console.WriteLine(" |            Ice Cream Shop Option Menu           |");
+                    Console.WriteLine(" ---------------------------------------------------");
+                    Console.WriteLine(" | [1] Display all customers information           |");
+                    Console.WriteLine(" | [2] Display regular and gold member queue       |");
+                    Console.WriteLine(" | [3] Register a new customer                     |");
+                    Console.WriteLine(" | [4] Create a new order                          |");
+                    Console.WriteLine(" | [5] Display order details of a customer         |");
+                    Console.WriteLine(" | [6] Modify Order Details                        |");
+                    Console.WriteLine(" | [7] Process an order and checkout               |");
+                    Console.WriteLine(" | [8] Display Month & Yearly total charged amount |");
+                    Console.WriteLine(" | [0] Exit                                        |");
+                    Console.WriteLine(" ---------------------------------------------------");
+                    int options = CheckIntInput("Enter an option: ", 0, 8);
+                    Console.WriteLine();
+                    
+                    if (options == 1)
+                    {
+                        AllCustomersInfo();
+                    }
+                    
+                    else if (options == 2)
+                    {
+                        AllCurrentOrders();
+                    }
+                    
+                    else if (options == 3)
+                    {
+                        RegisterCustomer();
+                    }
+                    
+                    else if (options == 4)
+                    {
+                        AddIceCreamToOrder();
+                    }
+                    
+                    else if (options == 5)
+                    {
+                        OrderDetails();
+                    }
+                    
+                    else if (options == 6)
+                    {
+                        
+                    }
+                    
+                    else if (options == 7)
+                    {
+                        
+                    }
+                    
+                    else if (options == 8)
+                    {
+                        TotalPriceBreakdown();
+                    }
+
+                    else
+                    {
+                        break;
+                    }
+                }
             
 
             // Start of the Basic Features  
@@ -117,6 +167,7 @@ namespace Icecream
                                 throw new Exception("ID already exist, try again.");
                             }
                         }
+
                         break;
                     }
 
@@ -149,11 +200,6 @@ namespace Icecream
                         break;
                     }
                     // Check if they enter valid date
-                    catch (FormatException)
-                    {
-                        Console.WriteLine("Enter a valid date");
-                    }
-
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
@@ -191,63 +237,6 @@ namespace Icecream
                 // Create the order for the customer
                 return chosenCustomer?.MakeOrder();
             }
-
-            // 4) Create the IceCream order
-            IceCream CreateIceCream()
-            {
-                string options = CheckUserInput(new List<string>() { "cup", "cone", "waffle" }, "Enter your options: ");
-                int scoops = checkIntInput("Enter number of scoops(1-3): ", 1, 3);
-
-                List<Flavour> flavourList = GetFlavours(scoops);
-                List<Topping> toppingList = GetToppings();
-                
-                bool dipppedChocolate = options == "cone" && checkYesNoInput("Do you want dipped chocolate(y/n): ");
-                string waffleFlavour = options == "waffle" ? CheckUserInput(new List<string>() { "original", "red velvet", "charcoal", "pandan" }, "Choose a waffle flavour: ") : "";
-
-                return (options switch
-                {
-                    "cone" => new Cone(options,scoops,flavourList,toppingList,dipppedChocolate),
-                    "cup" => new Cup(options, scoops, flavourList, toppingList),
-                    "waffle" => new Waffle(options, scoops, flavourList, toppingList, waffleFlavour),
-                    _ => null
-                })!;
-            }
-            
-            // Get the flavour for the scoops that the user wants
-            List<Flavour> GetFlavours(int scoops)
-            {
-                List<string> regularFlavours = new List<string>() { "vanilla", "chocolate", "strawberry" };
-                List<string> premiumFlavours = new List<string>() { "durian", "ube", "sea salt" };
-
-                List<Flavour> flavours = new List<Flavour>();
-
-                for (int i = 0; i < scoops; i++)
-                {
-                    string flavourChoice = CheckUserInput(regularFlavours.Concat(premiumFlavours).ToList(), $"Choose flavour for scoop {i + 1}: ");
-                    bool isPremium = premiumFlavours.Contains(flavourChoice);
-                    Flavour flavour = new Flavour(flavourChoice, isPremium, 1); // Assuming 1 quantity per scoop
-                    flavours.Add(flavour);
-                }
-
-                return flavours;
-            }
-            
-            // Get the topping that the user wants
-            List<Topping> GetToppings()
-            {
-                List<string> toppingMenu = new List<string>() { "sprinkles", "mochi", "sago", "oreos" };
-                List<Topping> toppings = new List<Topping>();
-
-                int numToppings = checkIntInput("Enter number of toppings (0-4): ", 0, 4);
-                for (int i = 0; i < numToppings; i++)
-                {
-                    string toppingChoice = CheckUserInput(toppingMenu, $"Choose topping {i + 1}: ");
-                    Topping topping = new Topping(toppingChoice);
-                    toppings.Add(topping);
-                }
-
-                return toppings;
-            }
             
             // 4) Add IceCream into customer's order
             void AddIceCreamToOrder()
@@ -275,16 +264,16 @@ namespace Icecream
                 chosenCustomer.OrderHistory.Add(ordered);
                 foreach (string[] lines in ReadFile("customers.csv"))
                 {
-                    if (Convert.ToString(chosenCustomer.Memberid) != lines[0]) continue;
+                    if (Convert.ToString(chosenCustomer.Memberid) != lines[1]) continue;
+                    
                     if (lines[3] == "Gold")
                     {
                         goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
                         break;
                     }
                     
-                    orderQueue.Enqueue(ordered);
+                    orderQueue.Enqueue(chosenCustomer.CurrentOrder);
                 }
-                Console.WriteLine(chosenCustomer);
             }
 
 
@@ -293,23 +282,25 @@ namespace Icecream
             {
                 // List the customers 
                 AllCustomersInfo();
-                
+
                 // Prompt user to select a customer and retrieve the selected customer 
                 Customer chosencustomer = ChooseCustomer();
-                
+
                 // Retrieve all the order objects of the customer, pass and current
                 Console.WriteLine("Current Orders" +
                                   "-------------------------------------------------------------------------------------------------");
                 Console.WriteLine(chosencustomer.CurrentOrder.ToString());
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
-                
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
+
                 // For each order, display all the details of the order including datetime recieved, datetime fullfilled(if applicable) and all icecream details associated with the order
                 Console.WriteLine("Past Orders" +
                                   "-------------------------------------------------------------------------------------------------");
                 ListOrder(chosencustomer.OrderHistory);
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
             }
-            
+
             // 6) Modify order details
             void ModifyOrderDetails()
             {
@@ -317,23 +308,103 @@ namespace Icecream
                 AllCustomersInfo();
                 // Prompt the user to select a customer and retrieve the selected customer's current order 
                 Customer chosencustomer = ChooseCustomer();
-                // List all the ice cream objects contained in the order 
-                Console.WriteLine("Current Orders" +
-                                  "-------------------------------------------------------------------------------------------------");
-                Console.WriteLine(chosencustomer.CurrentOrder.ToString());
-                Console.WriteLine("-------------------------------------------------------------------------------------------------");
-                // Options 
+                // input validation for the options
                 bool whileloop = true;
-                // Option 1 - Choose an existing ice cream to modify
-                // Let the user select which ice cream to modify 
-                // Prompt the new information for the modifications they wish to make 
-                // Option 2 - Add on entirely new ice cream to the order 
-                // Create a new ice cream and add it to the order
-                // Option 3 - Choose and existing ice cream to delete from the order 
-                // Select the ice cream they want to remove but if there is only one in the order then got to display a message 
+                while (whileloop)
+                {
+                    // List all the ice cream objects contained in the order 
+                    Console.WriteLine("Current Orders" +
+                                      "-------------------------------------------------------------------------------------------------");
+                    List<IceCream> chosenicecreamlist = chosencustomer.CurrentOrder.IceCreamList;
+                    foreach (IceCream icecream in chosenicecreamlist)
+                    {
+                        Console.WriteLine($"{chosenicecreamlist.IndexOf(icecream) + 1} {icecream.ToString()}");
+                    }
+                    Console.WriteLine(
+                        "-------------------------------------------------------------------------------------------------");
+                    try
+                    {
+                        int opt = CheckIntInput("Option 1 - Choose an existing ice cream to modify" +
+                                                "Option 2 - Add an entirely new ice cream to your order" +
+                                                "Option 3 - Choose an existing ice cream to delete from your order" +
+                                                "Option 4 - Exit", 1, 4);
+                        switch (opt)
+                        {
+                            case 1:
+                                chosencustomer.CurrentOrder.ModifyIceCream();
+                                break;
+                            case 2:
+                                
+                                break;
+                            case 3:
+                                chosencustomer.CurrentOrder.DeleteIceCream();
+                                break;
+                            case 4:
+                                whileloop = false;
+                                break;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    // Option 1 - Choose an existing ice cream to modify
+                    // Let the user select which ice cream to modify 
+                    // Prompt the new information for the modifications they wish to make 
+                    // Option 2 - Add on entirely new ice cream to the order 
+                    // Create a new ice cream and add it to the order
+                    // Option 3 - Choose an existing ice cream to delete from the order 
+                    // Select the ice cream they want to remove but if there is only one in the order then got to display a message 
+                }
+
             }
-
-
+            
+            // Advanced Feature (a)
+            
+            
+            // Advanced Feature (b)
+            void TotalPriceBreakdown()
+            {
+                double total = 0;
+                // Prompt user for the year.
+                int year = CheckIntInput("Enter the year: ", 1, 10000);
+                Console.WriteLine();
+                
+                // List of Months and keep track of the total of each month
+                List<string> monthList = new List<string>(){"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+                List<double> monthTotalList = new List<double>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                
+                // Read File
+                foreach (string[] elements in ReadFile("orders.csv"))
+                {
+                    // Find the date of the line
+                    DateTime dateFulfilled = DateTime.Parse(elements[3]);
+                    
+                    // Check if Year matches
+                    if (dateFulfilled.Year == year)
+                    {
+                        // Convert the Line of text to IceCream 
+                        IceCream tempIceCream = ConvertOrderCsv(elements);
+                        
+                        // Loop through 
+                        for (int i = 0; i < 12; i++)
+                        {
+                            if (dateFulfilled.Month == i+1)
+                            {
+                                monthTotalList[i] += tempIceCream.CalculatePrice();
+                            }
+                        }
+                        total += tempIceCream.CalculatePrice();
+                    }
+                }
+                
+                for (int i = 0; i < 12; i++)
+                {
+                    Console.WriteLine($"{monthList[i]} {year}:   ${monthTotalList[i]}");
+                }
+                Console.WriteLine();
+                Console.WriteLine($"Total:     ${total}");
+            }
 
             // Additional Methods
             // Choose which customer to append data inside.
@@ -426,8 +497,131 @@ namespace Icecream
                 }
             }
             
+            // Listing the orders in both queue and list
+            void ListOrder(IEnumerable<Order> orderqueue)
+            {
+                foreach (Order order in orderqueue)
+                {
+                    Console.WriteLine(order.ToString());
+                }
+            }
+
+            IceCream ConvertOrderCsv(string[] line)
+            {
+                bool isPremium = false;
+                List<Flavour> flavourList = new List<Flavour>();
+                List<Topping> toppingList = new List<Topping>();
+                // Create Flavour Object
+                for (int i = 8; i < 11; i++)
+                {
+                    if (line[i] == "Ube" || line[i] == "Sea Salt" || line[i] == "Durian")
+                    {
+                        isPremium = true;
+                    }
+                    
+                    if (line[i] != null)
+                    {
+                        Flavour tempFlavour = new Flavour(line[i], isPremium, 1);
+                        flavourList.Add(tempFlavour);
+                    }
+
+                }
+                
+                // Create Topping Object
+                for (int i = 11; i < 15; i++)
+                {
+                    if (line[i] != null)
+                    {
+                        Topping tempTopping = new Topping(line[i]);
+                        toppingList.Add(tempTopping);
+                    }
+                }
+                
+                if (line[4] == "Cup")
+                {
+                    IceCream tempIceCream = new Cup(line[4], Convert.ToInt32(line[5]), flavourList, toppingList);
+                    return tempIceCream;
+                }
+                
+                else if (line[4] == "Cone")
+                {
+                    bool.TryParse(line[6], out bool result);
+                    IceCream tempIceCream = new Cone(line[4], Convert.ToInt32(line[5]), flavourList, toppingList, result);
+                    return tempIceCream;
+                }
+                
+                else if (line[4] == "Waffle")
+                {
+                    Waffle tempIceCream = new Waffle(line[4],Convert.ToInt32(line[5]), flavourList, toppingList, line[7]);
+                    return tempIceCream;
+                }
+
+                return null;
+            }
+        }
+        
+         // Public static methods 
+         // 4) Create the IceCream order
+            public static IceCream CreateIceCream()
+            {
+                string options = CheckUserInput(new List<string>() { "cup", "cone", "waffle" }, "Enter your options: ");
+                int scoops = CheckIntInput("Enter number of scoops(1-3): ", 1, 3);
+
+                List<Flavour> flavourList = GetFlavours(scoops);
+                List<Topping> toppingList = GetToppings();
+                
+                bool dipppedChocolate = options == "cone" && checkYesNoInput("Do you want dipped chocolate(y/n): ");
+                string waffleFlavour = options == "waffle" ? CheckUserInput(new List<string>() { "original", "red velvet", "charcoal", "pandan" }, "Choose a waffle flavour: ") : "";
+
+                return (options switch
+                {
+                    "cone" => new Cone(options,scoops,flavourList,toppingList,dipppedChocolate),
+                    "cup" => new Cup(options, scoops, flavourList, toppingList),
+                    "waffle" => new Waffle(options, scoops, flavourList, toppingList, waffleFlavour),
+                    _ => null
+                })!;
+            }
+            
+            // Get the flavour for the scoops that the user wants
+            public static List<Flavour> GetFlavours(int scoops)
+            {
+                List<string> regularFlavours = new List<string>() { "vanilla", "chocolate", "strawberry" };
+                List<string> premiumFlavours = new List<string>() { "durian", "ube", "sea salt" };
+
+                List<Flavour> flavours = new List<Flavour>();
+
+                for (int i = 0; i < scoops; i++)
+                {
+                    string flavourChoice = CheckUserInput(regularFlavours.Concat(premiumFlavours).ToList(), $"Choose flavour for scoop {i + 1}: ");
+                    bool isPremium = premiumFlavours.Contains(flavourChoice);
+                    Flavour flavour = new Flavour(flavourChoice, isPremium, 1); // Assuming 1 quantity per scoop
+                    flavours.Add(flavour);
+                }
+
+                return flavours;
+            }
+            
+            // Get the topping that the user wants
+            public static List<Topping> GetToppings()
+            {
+                List<string> toppingMenu = new List<string>() { "sprinkles", "mochi", "sago", "oreos" };
+                List<Topping> toppings = new List<Topping>();
+
+                int numToppings = CheckIntInput("Enter number of toppings (0-4): ", 0, 4);
+                for (int i = 0; i < numToppings; i++)
+                {
+                    string toppingChoice = CheckUserInput(toppingMenu, $"Choose topping {i + 1}: ");
+                    Topping topping = new Topping(toppingChoice);
+                    toppings.Add(topping);
+                }
+
+                return toppings;
+            }
+            
+            // Additional Features
+            
             // Check if user input is an existing item on the list (For Option 4)
-            string CheckUserInput(List<string> menu, string prompt)
+            public static string CheckUserInput(List<string> menu, string prompt)
             {
                 while (true)
                 {
@@ -451,7 +645,7 @@ namespace Icecream
             }
             
             // Check if the user input only contains integer (For option 4)
-            int checkIntInput(string prompt, int min, int max)
+            public static int CheckIntInput(string prompt, int min, int max)
             {
                 while (true)
                 {
@@ -471,9 +665,8 @@ namespace Icecream
                     }
                 }
             }
-            
             // Check if user input is y(yes) or n(no)
-            bool checkYesNoInput(string prompt)
+            public static bool checkYesNoInput(string prompt)
             {
                 while (true)
                 {
@@ -485,15 +678,5 @@ namespace Icecream
                 }
             }
             
-            // Listing the orders in both queue and list
-            void ListOrder(IEnumerable<Order> orderqueue)
-            {
-                foreach (Order order in orderqueue)
-                {
-                    Console.WriteLine(order.ToString());
-                }
-            }
-
-        }
     }
 }
