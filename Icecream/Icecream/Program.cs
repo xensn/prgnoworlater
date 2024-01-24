@@ -390,17 +390,19 @@ namespace Icecream
                         {
                             throw new Exception("Please enter in a valid option!");
                         }
+
                         switch (opt)
                         {
                             case 1:
                                 try
                                 {
-                                    
+
                                 }
                                 catch
                                 {
-                                    
+
                                 }
+
                                 break;
                             case 2:
                                 break;
@@ -410,6 +412,10 @@ namespace Icecream
                                 whileloop = false;
                                 break;
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
                     }
                     // Option 1 - Choose an existing ice cream to modify
                     // Let the user select which ice cream to modify 
