@@ -12,6 +12,14 @@ namespace Icecream
     {
         static void Main(string[] args)
         {
+            /*// list for the customer objects from the .csv file 
+            List<Customer> customers = new List<Customer>();
+            // creating the customer objects from the .csv file 
+            CreateCustomerObjects("customers.csv", customers);
+            
+            // list for the previous orders from the .csv file 
+            List<Order> orders = new List<Order>();*/
+            
             Queue<Order> orderQueue = new Queue<Order>();
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Customer? chosenCustomer;
@@ -99,14 +107,14 @@ namespace Icecream
             // 2) List all current orders
             void AllCurrentOrders()
             {
-                // print out the current orders in normal order queue
+                // print out the current orders in the normal order queue
                 Console.WriteLine("Orders from Normal Order Queue" +
-                                  "-------------------------------------------------------------------------------------------------");
+                                  "\n-------------------------------------------------------------------------------------------------");
                 ListOrder(orderQueue);
                 Console.WriteLine("-------------------------------------------------------------------------------------------------");
-
+                // print out the current orders in the gold queue
                 Console.WriteLine("Orders from Gold Order Queue" +
-                                  "-------------------------------------------------------------------------------------------------");
+                                  "\n-------------------------------------------------------------------------------------------------");
                 ListOrder(goldOrderQueue);
 
                 Console.WriteLine("-------------------------------------------------------------------------------------------------");
@@ -288,17 +296,27 @@ namespace Icecream
 
                 // Retrieve all the order objects of the customer, pass and current
                 Console.WriteLine("Current Orders" +
-                                  "-------------------------------------------------------------------------------------------------");
+                                  "\n-------------------------------------------------------------------------------------------------");
                 Console.WriteLine(chosencustomer.CurrentOrder.ToString());
                 Console.WriteLine(
                     "-------------------------------------------------------------------------------------------------");
 
                 // For each order, display all the details of the order including datetime recieved, datetime fullfilled(if applicable) and all icecream details associated with the order
                 Console.WriteLine("Past Orders" +
-                                  "-------------------------------------------------------------------------------------------------");
+                                  "\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine("{0, -9} {1, -17} {2, -17} {3, -7} {4,-7} {5, -7} {6,-15} {7, -11} {8, -11} {9,-11} {10, -10} {11, -10} {12, -10} {13, -10}",
+                    "Order Id", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Toppings1", "Toppings2", "Toppings3", "Toppings4");
+                foreach (string[] elements in ReadFile("orders.csv"))
+                {
+                    if (chosencustomer.Memberid == Convert.ToInt32(elements[1]))
+                    {
+                        Console.WriteLine("{0, -9} {1, -17} {2, -17} {3, -7} {4,-7} {5, -7} {6,-15} {7, -11} {8, -11} {9,-11} {10, -10} {11, -10} {12, -10} {13, -10}",
+                            elements[0] , elements[2] , elements[3], elements[4], elements[5], elements[6], elements[7], elements[8], elements[9], elements[10], elements[11], elements[12], elements[13], elements[14]);
+                    }
+                }
                 ListOrder(chosencustomer.OrderHistory);
                 Console.WriteLine(
-                    "-------------------------------------------------------------------------------------------------");
+                    "---------------------------------------------------------------------------------------------------------------------------------------------------------------------");
             }
 
             // 6) Modify order details
@@ -334,7 +352,7 @@ namespace Icecream
                                 chosencustomer.CurrentOrder.ModifyIceCream();
                                 break;
                             case 2:
-                                
+                                CreateIceCream();
                                 break;
                             case 3:
                                 chosencustomer.CurrentOrder.DeleteIceCream();
@@ -558,6 +576,17 @@ namespace Icecream
 
                 return null;
             }
+
+            /*void CreateCustomerObjects(string filename, List<Customer> customers)
+            {
+                foreach (string[] elements in ReadFile("customers.csv"))
+                {
+                    Customer customer = new Customer(elements[0], Convert.ToInt32(elements[1]), Convert.ToDateTime(elements[2]));
+                    customer.Rewards.Points = Convert.ToInt32(elements[4]);
+                    
+                    customers.Add(customer);
+                }
+            }*/
         }
         
          // Public static methods 

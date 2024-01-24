@@ -70,9 +70,6 @@ public class Order
 
     public void AddIceCream(IceCream ic)
     {
-        // getting the option for the ice cream
-        Program.CheckUserInput(new List<string>{"cup", "cone", "waffle"},
-            "Please enter the option of the ice cream that you want");
         IceCreamList.Add(ic);
     }
 
@@ -87,11 +84,18 @@ public class Order
 
                 if (1 <= icecreamtodelete && icecreamtodelete <= IceCreamList.Count() + 1)
                 {
-                    IceCreamList.RemoveAt(icecreamtodelete - 1);
+                    if(!(IceCreamList.Count == 1))
+                    {
+                        IceCreamList.RemoveAt(icecreamtodelete - 1);
+                    }
+                    else
+                    {
+                        Console.WriteLine("There is only one ice cream object within the order. You cannot have zero ice creams in your order");
+                    }
                 }
                 else
                 {
-                    throw new Exception("Please enter a correct ice cream within your currrent order to delete!");
+                    throw new Exception("Please enter a correct ice cream within your current order to delete!");
                 }
             }
             catch(Exception ex)

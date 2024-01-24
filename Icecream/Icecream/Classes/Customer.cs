@@ -22,7 +22,7 @@ public class Customer
         Dob = dob;
         
         CurrentOrder = new Order();
-        OrderHistory = new List<Order>();
+        OrderHistory = new List<Order>(); // maybe i will be adding this to the customer 
         Rewards = new PointCard();
     }
     public Order MakeOrder()
