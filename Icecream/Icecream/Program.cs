@@ -350,7 +350,7 @@ namespace Icecream
                 Console.WriteLine(
                     "-------------------------------------------------------------------------------------------------");
 
-                // For each order, display all the details of the order including datetime recieved, datetime fullfilled(if applicable) and all icecream details associated with the order
+                // For each order, display all the details of the order including datetime recieved, datetime fulfilled(if applicable) and all icecream details associated with the order
                 Console.WriteLine("Past Orders" +
                                   "-------------------------------------------------------------------------------------------------");
                 ListOrder(chosencustomer.OrderHistory);
@@ -436,7 +436,7 @@ namespace Icecream
             {
                 double total = 0;
                 // Prompt user for the year.
-                int year = CheckIntInput("Enter the year: ", 1, 10000);
+                int year = CheckIntInput("Enter the year: ", 1, DateTime.Now.Year);
                 Console.WriteLine();
                 
                 // List of Months and keep track of the total of each month
