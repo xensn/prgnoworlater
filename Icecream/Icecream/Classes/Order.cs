@@ -27,19 +27,19 @@ public class Order
         {
             try 
             {
-                Console.WriteLine("Please select an ice cream to modify: ");
+                Console.Write("Please select an ice cream to modify: ");
                 int icecreamopt = Convert.ToInt32(Console.ReadLine());
                 
                 // making sure the customer will only input what is within their ice cream list
                 if (1 <= icecreamopt && icecreamopt <= IceCreamList.Count() + 1) 
                 {
                     // asking if they want to change their option 
-                    Console.WriteLine("Do you want to change the option of the ice cream selected[Y/N]?");
+                    Console.Write("Do you want to change the option of the ice cream selected[Y/N]?");
                     string? input1 = Console.ReadLine()?.ToLower();
                     
                     if (!(input1 == "y" || input1 == "n"))
                     {
-                        Console.WriteLine("Invalid input. Please enter 'Y' or 'N'.");
+                        Console.Write("Invalid input. Please enter 'Y' or 'N'.");
                     }
                     
                     if (input1 == "y")
@@ -48,7 +48,7 @@ public class Order
                     }
                     else
                     {
-                        Console.WriteLine($"The option of your ice cream will remain as a {IceCreamList[icecreamopt-1].Option}");
+                        Console.Write($"The option of your ice cream will remain as a {IceCreamList[icecreamopt-1].Option}");
                     }
                     // changing the scoops and flavour and toppings 
                     ChangingScoopsFlavourToppings(icecreamopt);
@@ -79,7 +79,7 @@ public class Order
         {
             try
             {
-                Console.WriteLine("Please select an ice cream that you want to delete");
+                Console.Write("Please select an ice cream that you want to delete");
                 int icecreamtodelete = Convert.ToInt32(Console.ReadLine());
 
                 if (1 <= icecreamtodelete && icecreamtodelete <= IceCreamList.Count() + 1)
@@ -137,8 +137,7 @@ public double CalculateTotal()
 
                         if (modifyoption == chosenIceCream.Option.ToLower())
                         {
-                            Console.WriteLine(
-                                $"Your ice cream is already a {modifyoption}. Please input another option.");
+                            Console.WriteLine($"Your ice cream is already a {modifyoption}. Please input another option.");
                         }
                         else if (!icecreamoption.Contains(modifyoption))
                         {
@@ -195,10 +194,10 @@ public double CalculateTotal()
         bool whileloop = true;
         while (whileloop)
         {
-            int whattomodify = Program.CheckIntInput("Please pick what you want to modify in your ice cream" +
-                                                        "[1] The number of scoops & the flavours of the ice cream" +
-                                                        "[2] The Toppings added to the ice cream" +
-                                                        "[3] Exit", 1, 3);
+            int whattomodify = Program.CheckIntInput("[1] The number of scoops & the flavours of the ice cream" +
+                                                        "\n[2] The Toppings added to the ice cream" +
+                                                        "\n[3] Exit" +
+                                                        "\nPlease pick what you want to modify in your ice cream", 1, 3);
             switch (whattomodify)
             {
                 case 1:
