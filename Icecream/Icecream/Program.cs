@@ -12,6 +12,7 @@ namespace Icecream
     {
         static void Main(string[] args)
         {
+            
             /*// list for the customer objects from the .csv file 
             List<Customer> customers = new List<Customer>();
             // creating the customer objects from the .csv file 
@@ -22,6 +23,7 @@ namespace Icecream
             
             Queue<Order> orderQueue = new Queue<Order>();
             Queue<Order> goldOrderQueue = new Queue<Order>();
+            Dictionary<int, Order> customerOrder = new Dictionary<int, Order>();
             Customer? chosenCustomer;
             
                 // Select them option
@@ -240,7 +242,7 @@ namespace Icecream
                 AllCustomersInfo();
 
                 // Choose which customer to add order
-                chosenCustomer = ChooseCustomer();
+                chosenCustomer = ChooseCustomer(null);
 
                 // Create the order for the customer
                 return chosenCustomer?.MakeOrder();
@@ -281,6 +283,7 @@ namespace Icecream
                     }
                     
                     orderQueue.Enqueue(chosenCustomer.CurrentOrder);
+                    customerOrder.Add(chosenCustomer.Memberid, ordered);
                 }
             }
 
@@ -292,7 +295,7 @@ namespace Icecream
                 AllCustomersInfo();
 
                 // Prompt user to select a customer and retrieve the selected customer 
-                Customer chosencustomer = ChooseCustomer();
+                Customer chosencustomer = ChooseCustomer(null);
 
                 // Retrieve all the order objects of the customer, pass and current
                 Console.WriteLine("Current Orders" +
@@ -322,10 +325,20 @@ namespace Icecream
             // 6) Modify order details
             void ModifyOrderDetails()
             {
+                Order chosenOrder = null;
                 // List the customers
                 AllCustomersInfo();
                 // Prompt the user to select a customer and retrieve the selected customer's current order 
-                Customer chosencustomer = ChooseCustomer();
+                Customer? chosencustomer = ChooseCustomer(null);
+
+                foreach (KeyValuePair<int, Order> kvp in customerOrder)
+                {
+                    if (chosencustomer.Memberid == kvp.Key)
+                    {
+                        chosenOrder = kvp.Value;
+                    }
+                }
+                
                 // input validation for the options
                 bool whileloop = true;
                 while (whileloop)
@@ -333,7 +346,7 @@ namespace Icecream
                     // List all the ice cream objects contained in the order 
                     Console.WriteLine("Current Orders" +
                                       "\n-------------------------------------------------------------------------------------------------");
-                    List<IceCream> chosenicecreamlist = chosencustomer.CurrentOrder.IceCreamList;
+                    List<IceCream> chosenicecreamlist = chosenOrder.IceCreamList;
                     foreach (IceCream icecream in chosenicecreamlist)
                     {
                         Console.WriteLine($"{chosenicecreamlist.IndexOf(icecream) + 1}. {icecream.ToString()}");
@@ -350,14 +363,14 @@ namespace Icecream
                         switch (opt)
                         {
                             case 1:
-                                chosencustomer.CurrentOrder.ModifyIceCream();
+                                chosenOrder.ModifyIceCream();
                                 break;
                             case 2:
                                 IceCream icecream = CreateIceCream();
-                                chosencustomer.CurrentOrder.AddIceCream(icecream);
+                                chosenOrder.AddIceCream(icecream);
                                 break;
                             case 3:
-                                chosencustomer.CurrentOrder.DeleteIceCream();
+                                chosenOrder.DeleteIceCream();
                                 break;
                             case 4:
                                 whileloop = false;
@@ -380,6 +393,37 @@ namespace Icecream
             }
             
             // Advanced Feature (a)
+            void Payment()
+            {
+                Order chosenOrder;
+                Order dequeueOrder;
+                
+                // Check if there are any any gold queue members.
+                if (goldOrderQueue.Count > 0)
+                {
+                    // Dequeue and store the order we are handling in dequeueOrder
+                    dequeueOrder = goldOrderQueue.Dequeue();
+                    
+                    // Find the correct order and the customer who ordered in the store dictionary.
+                    foreach (KeyValuePair<int, Order> kvp in customerOrder)
+                    {
+                        if (dequeueOrder.Id == kvp.Value.Id)
+                        {
+                            chosenOrder = kvp.Value;
+                            chosenCustomer = ChooseCustomer(Convert.ToString(kvp.Key));
+                            break;
+                        }
+                    }
+                }
+
+                else
+                {
+                    dequeueOrder = orderQueue.Dequeue();
+                }
+                
+                // Have fun dhava
+            }
+            
             
             
             // Advanced Feature (b)
@@ -428,9 +472,23 @@ namespace Icecream
 
             // Additional Methods
             // Choose which customer to append data inside.
-            Customer? ChooseCustomer()
+            Customer? ChooseCustomer(string id)
             {
-                string? id = "";
+                if (id != null)
+                {
+                    foreach (string[] lines in ReadFile("customers.csv"))
+                    {
+                        if (lines[1] == Convert.ToString(id))
+                        {
+                            Customer tempCustomer = new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
+                            PointCard pointCard = new PointCard(Convert.ToInt32(lines[4]), Convert.ToInt32(lines[5]));
+                            pointCard.Tier = lines[3];
+                            tempCustomer.Rewards = pointCard;
+                            return tempCustomer;
+                        }
+                    }
+                }
+                
                 while (true)
                 {
                     // Data validation for customer id

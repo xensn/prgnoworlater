@@ -34,7 +34,7 @@ public class Order
                 if (1 <= icecreamopt && icecreamopt <= IceCreamList.Count() + 1) 
                 {
                     // asking if they want to change their option 
-                    Console.Write("Do you want to change the option of the ice cream selected[Y/N]?");
+                    Console.Write("Do you want to change the option of the ice cream selected[Y/N]?: ");
                     string? input1 = Console.ReadLine()?.ToLower();
                     
                     if (!(input1 == "y" || input1 == "n"))
@@ -129,7 +129,7 @@ public double CalculateTotal()
          bool whileloop = true;
                     while (whileloop)
                     {
-                        Console.WriteLine("Please select a new option (Cup, Cone, Waffle): ");
+                        Console.Write("Please select a new option (Cup, Cone, Waffle): ");
                         string modifyoption = Console.ReadLine().ToLower();
                         
                         // this list is to check if the user inputs the correct option 
@@ -152,7 +152,7 @@ public double CalculateTotal()
                             }
                             else if (modifyoption == "cone")
                             {
-                                Console.WriteLine("Do you want your cone to be dipped?[Y/N]That will be an extra $2.");
+                                Console.WriteLine("That will be an extra $2.\nDo you want your cone to be dipped?[Y/N]: ");
                                 string? input2 = Console.ReadLine()?.ToLower();
                                 if (!(input2 == "y" || input2 == "n"))
                                 {
