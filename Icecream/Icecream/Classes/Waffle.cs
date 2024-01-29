@@ -20,9 +20,10 @@ public class Waffle:IceCream
             _ => 9.5 + Toppings.Count
         };
 
-        if (WaffleFlavour != "original")
+        if (WaffleFlavour != "Original")
         {
             price += 3;
+            
         }
         
         foreach (Flavour f in Flavours)
@@ -38,6 +39,6 @@ public class Waffle:IceCream
 
     public override string ToString()
     {
-        return $"{base.ToString()} | Price: {CalculatePrice()}";
+        return $"{base.ToString()} | Price: {CalculatePrice()} | Waffle: {WaffleFlavour}";
     }
 }

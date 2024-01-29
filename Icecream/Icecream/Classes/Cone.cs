@@ -21,7 +21,7 @@ public class Cone:IceCream
          _ => 6.5 + Toppings.Count
       };
 
-      if (Dipped == true)
+      if (Dipped)
       {
          price += 2;
       }
@@ -39,6 +39,6 @@ public class Cone:IceCream
    
    public override string ToString()
    {
-      return $"{base.ToString()} | Price: {CalculatePrice()}";
+      return $"{base.ToString()} | Price: {CalculatePrice()} | Dipped: {Dipped.GetType()}";
    }
 }

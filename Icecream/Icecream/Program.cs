@@ -468,6 +468,7 @@ namespace Icecream
                 }
                 Console.WriteLine();
                 Console.WriteLine($"Total:     ${total}");
+                
             }
 
             // Additional Methods
@@ -592,14 +593,16 @@ namespace Icecream
                 // Create Flavour Object
                 for (int i = 8; i < 11; i++)
                 {
+                    
                     if (line[i] == "Ube" || line[i] == "Sea Salt" || line[i] == "Durian")
                     {
                         isPremium = true;
                     }
                     
-                    if (line[i] != null)
+                    if (line[i] != "")
                     {
                         Flavour tempFlavour = new Flavour(line[i], isPremium, 1);
+                        
                         flavourList.Add(tempFlavour);
                     }
 
@@ -608,7 +611,7 @@ namespace Icecream
                 // Create Topping Object
                 for (int i = 11; i < 15; i++)
                 {
-                    if (line[i] != null)
+                    if (line[i] != "")
                     {
                         Topping tempTopping = new Topping(line[i]);
                         toppingList.Add(tempTopping);
