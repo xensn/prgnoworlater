@@ -332,27 +332,29 @@ namespace Icecream
                 {
                     // List all the ice cream objects contained in the order 
                     Console.WriteLine("Current Orders" +
-                                      "-------------------------------------------------------------------------------------------------");
+                                      "\n-------------------------------------------------------------------------------------------------");
                     List<IceCream> chosenicecreamlist = chosencustomer.CurrentOrder.IceCreamList;
                     foreach (IceCream icecream in chosenicecreamlist)
                     {
-                        Console.WriteLine($"{chosenicecreamlist.IndexOf(icecream) + 1} {icecream.ToString()}");
+                        Console.WriteLine($"{chosenicecreamlist.IndexOf(icecream) + 1}. {icecream.ToString()}");
                     }
                     Console.WriteLine(
                         "-------------------------------------------------------------------------------------------------");
                     try
                     {
                         int opt = CheckIntInput("Option 1 - Choose an existing ice cream to modify" +
-                                                "Option 2 - Add an entirely new ice cream to your order" +
-                                                "Option 3 - Choose an existing ice cream to delete from your order" +
-                                                "Option 4 - Exit", 1, 4);
+                                                "\nOption 2 - Add an entirely new ice cream to your order" +
+                                                "\nOption 3 - Choose an existing ice cream to delete from your order" +
+                                                "\nOption 4 - Exit" +
+                                                "\nPlease select an option: ", 1, 4);
                         switch (opt)
                         {
                             case 1:
                                 chosencustomer.CurrentOrder.ModifyIceCream();
                                 break;
                             case 2:
-                                CreateIceCream();
+                                IceCream icecream = CreateIceCream();
+                                chosencustomer.CurrentOrder.AddIceCream(icecream);
                                 break;
                             case 3:
                                 chosencustomer.CurrentOrder.DeleteIceCream();
