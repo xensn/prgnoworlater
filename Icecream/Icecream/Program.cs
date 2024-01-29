@@ -78,7 +78,7 @@ namespace Icecream
                     
                     else if (options == 7)
                     {
-                        
+                        Payment();
                     }
                     
                     else if (options == 8)
