@@ -259,7 +259,7 @@ namespace Icecream
                 while (true)
                 {
 
-                    bool anotherO = checkYesNoInput("Would you like to add another ice cream to the order?(y/n)");
+                    bool anotherO = checkYesNoInput("Would you like to add another ice cream to the order?(y/n): ");
                     if (anotherO)
                     {
                         iceCream = CreateIceCream();
@@ -291,44 +291,81 @@ namespace Icecream
             // 5) Display order details of a customer
             void OrderDetails()
             {
-                // List the customers 
+                // list all the customers
                 AllCustomersInfo();
 
-                // Prompt user to select a customer and retrieve the selected customer 
+                // prompt the user for the customer id and get the chosen customer
+                Order chosenOrder = null;
                 Customer chosencustomer = ChooseCustomer(null);
-
-                // Retrieve all the order objects of the customer, pass and current
-                Console.WriteLine("Current Orders" +
-                                  "\n-------------------------------------------------------------------------------------------------");
-                Console.WriteLine(chosencustomer.CurrentOrder.ToString());
-                Console.WriteLine(
-                    "-------------------------------------------------------------------------------------------------");
-
-                // For each order, display all the details of the order including datetime recieved, datetime fulfilled(if applicable) and all icecream details associated with the order
-                Console.WriteLine("Past Orders" +
-                                  "\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-                Console.WriteLine("{0, -9} {1, -17} {2, -17} {3, -7} {4,-7} {5, -7} {6,-15} {7, -11} {8, -11} {9,-11} {10, -10} {11, -10} {12, -10} {13, -10}",
-                    "Order Id", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Toppings1", "Toppings2", "Toppings3", "Toppings4");
-                foreach (string[] elements in ReadFile("orders.csv"))
+                
+                // get the chosen customer's current order from customerorder dict 
+                foreach (KeyValuePair<int, Order> kvp in customerOrder)
                 {
-                    if (chosencustomer.Memberid == Convert.ToInt32(elements[1]))
+                    if (chosencustomer.Memberid == kvp.Key)
+                    {
+                        chosenOrder = kvp.Value;
+                    }
+                }
+                
+                // check if the customer's current order even exists, and print the details accordingly
+                if (chosenOrder != null)
+                {
+                    Console.WriteLine("Current Orders" +
+                                      "\n-------------------------------------------------------------------------------------------------");
+                    foreach (IceCream icecream in chosenOrder.IceCreamList)
+                    {
+                        Console.WriteLine($"{chosenOrder.IceCreamList.IndexOf(icecream) + 1}. {icecream.ToString()}");
+                    }
+                    Console.WriteLine(
+                        "-------------------------------------------------------------------------------------------------");
+                }
+                else
+                {
+                    Console.WriteLine("There are no current orders for the given Member ID.");
+                }
+
+                // list to store currrent matching order info from order.csv
+                List<string[]> matchingorderinfo = new List<string[]>();
+                
+                //reading the orders.csv file to check if there are any past orders matching the member id
+                foreach (string[] orders in ReadFile("orders.csv"))
+                {
+                    if (chosencustomer.Memberid == Convert.ToInt32(orders[1]))
+                    {
+                        matchingorderinfo.Add(orders);
+                    }
+                }
+                
+                // if there is a matching member id then print out the past orders, if not then dont print out the past orders
+                if (matchingorderinfo.Count > 0)
+                {
+                    Console.WriteLine("Past Orders" +
+                                      "\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    Console.WriteLine("{0, -9} {1, -17} {2, -17} {3, -7} {4,-7} {5, -7} {6,-15} {7, -11} {8, -11} {9,-11} {10, -10} {11, -10} {12, -10} {13, -10}",
+                        "Order Id", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Toppings1", "Toppings2", "Toppings3", "Toppings4");
+
+                    foreach (var elements in matchingorderinfo)
                     {
                         Console.WriteLine("{0, -9} {1, -17} {2, -17} {3, -7} {4,-7} {5, -7} {6,-15} {7, -11} {8, -11} {9,-11} {10, -10} {11, -10} {12, -10} {13, -10}",
                             elements[0] , elements[2] , elements[3], elements[4], elements[5], elements[6], elements[7], elements[8], elements[9], elements[10], elements[11], elements[12], elements[13], elements[14]);
                     }
+                    Console.Write(
+                        "---------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                 }
-                ListOrder(chosencustomer.OrderHistory);
-                Console.WriteLine(
-                    "---------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                else
+                {
+                    Console.WriteLine("There are no past orders for the given Member ID.");
+                }
             }
 
             // 6) Modify order details
             void ModifyOrderDetails()
             {
-                Order chosenOrder = null;
-                // List the customers
+                // list the customers
                 AllCustomersInfo();
-                // Prompt the user to select a customer and retrieve the selected customer's current order 
+                
+                // prompt the user for their member id and get their current order so that they can make modifications
+                Order chosenOrder = null;
                 Customer? chosencustomer = ChooseCustomer(null);
 
                 foreach (KeyValuePair<int, Order> kvp in customerOrder)
@@ -339,22 +376,21 @@ namespace Icecream
                     }
                 }
                 
-                // input validation for the options
-                bool whileloop = true;
-                while (whileloop)
+                // loop to print out the options and the current order for the modifications [doing this only if current order exits for the chosencustomer]
+                if (chosenOrder != null)
                 {
-                    // List all the ice cream objects contained in the order 
-                    Console.WriteLine("Current Orders" +
-                                      "\n-------------------------------------------------------------------------------------------------");
-                    List<IceCream> chosenicecreamlist = chosenOrder.IceCreamList;
-                    foreach (IceCream icecream in chosenicecreamlist)
+                    bool whileloop = true;
+                    while (whileloop)
                     {
-                        Console.WriteLine($"{chosenicecreamlist.IndexOf(icecream) + 1}. {icecream.ToString()}");
-                    }
-                    Console.WriteLine(
-                        "-------------------------------------------------------------------------------------------------");
-                    try
-                    {
+                        // List all the ice cream objects contained in the order 
+                        Console.WriteLine("Current Orders" +
+                                          "\n-------------------------------------------------------------------------------------------------");
+                        foreach (IceCream icecream in chosenOrder.IceCreamList)
+                        {
+                            Console.WriteLine($"{chosenOrder.IceCreamList.IndexOf(icecream) + 1}. {icecream.ToString()}");
+                        }
+                        Console.WriteLine(
+                            "-------------------------------------------------------------------------------------------------");
                         int opt = CheckIntInput("Option 1 - Choose an existing ice cream to modify" +
                                                 "\nOption 2 - Add an entirely new ice cream to your order" +
                                                 "\nOption 3 - Choose an existing ice cream to delete from your order" +
@@ -363,33 +399,29 @@ namespace Icecream
                         switch (opt)
                         {
                             case 1:
-                                chosenOrder.ModifyIceCream();
+                                Console.Write("Please select an ice cream to modify: ");
+                                int icecreamopt = Convert.ToInt32(Console.ReadLine());
+                                chosenOrder.ModifyIceCream(icecreamopt);
                                 break;
                             case 2:
                                 IceCream icecream = CreateIceCream();
                                 chosenOrder.AddIceCream(icecream);
                                 break;
                             case 3:
-                                chosenOrder.DeleteIceCream();
+                                Console.Write("Please select an ice cream that you want to delete");
+                                int icecreamtodelete = Convert.ToInt32(Console.ReadLine());
+                                chosenOrder.DeleteIceCream(icecreamtodelete);
                                 break;
                             case 4:
                                 whileloop = false;
                                 break;
                         }
                     }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                    // Option 1 - Choose an existing ice cream to modify
-                    // Let the user select which ice cream to modify 
-                    // Prompt the new information for the modifications they wish to make 
-                    // Option 2 - Add on entirely new ice cream to the order 
-                    // Create a new ice cream and add it to the order
-                    // Option 3 - Choose an existing ice cream to delete from the order 
-                    // Select the ice cream they want to remove but if there is only one in the order then got to display a message 
                 }
-
+                else
+                {
+                    Console.WriteLine("There are no current orders for the given Member ID.");
+                }
             }
             
             // Advanced Feature (a)
@@ -639,17 +671,6 @@ namespace Icecream
 
                 return null;
             }
-
-            /*void CreateCustomerObjects(string filename, List<Customer> customers)
-            {
-                foreach (string[] elements in ReadFile("customers.csv"))
-                {
-                    Customer customer = new Customer(elements[0], Convert.ToInt32(elements[1]), Convert.ToDateTime(elements[2]));
-                    customer.Rewards.Points = Convert.ToInt32(elements[4]);
-                    
-                    customers.Add(customer);
-                }
-            }*/
         }
         
          // Public static methods 

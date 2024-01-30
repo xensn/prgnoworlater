@@ -21,29 +21,20 @@ public class Order
     }
     
     // Need to edit the property 
-    public void ModifyIceCream()
+    public void ModifyIceCream(int icecreamopt)
     {
         while(true)
         {
             try 
             {
-                Console.Write("Please select an ice cream to modify: ");
-                int icecreamopt = Convert.ToInt32(Console.ReadLine());
-                
                 // making sure the customer will only input what is within their ice cream list
                 if (1 <= icecreamopt && icecreamopt <= IceCreamList.Count() + 1) 
                 {
                     // asking if they want to change their option 
-                    Console.Write("Do you want to change the option of the ice cream selected[Y/N]?: ");
-                    string? input1 = Console.ReadLine()?.ToLower();
-                    
-                    if (!(input1 == "y" || input1 == "n"))
+                    bool yesorno = Program.checkYesNoInput("Do you want to change the option of the ice cream selected[Y/N]?: ");
+                    if (yesorno = true)
                     {
-                        Console.Write("Invalid input. Please enter 'Y' or 'N'.");
-                    }
-                    
-                    if (input1 == "y")
-                    {
+                        // changing the option of the ice cream
                         ChangeIceCreamOption(icecreamopt);
                     }
                     else
@@ -73,24 +64,23 @@ public class Order
         IceCreamList.Add(ic);
     }
 
-    public void DeleteIceCream()
+    public void DeleteIceCream(int icecreamtodelete)
     {
         while (true)
         {
             try
             {
-                Console.Write("Please select an ice cream that you want to delete");
-                int icecreamtodelete = Convert.ToInt32(Console.ReadLine());
-
+                // checking the ice cream they want to delete is within the current order
                 if (1 <= icecreamtodelete && icecreamtodelete <= IceCreamList.Count() + 1)
                 {
+                    // not allowing them to delete the ice cream if there is only one ice cream left in the current order
                     if(!(IceCreamList.Count == 1))
                     {
                         IceCreamList.RemoveAt(icecreamtodelete - 1);
                     }
                     else
                     {
-                        Console.WriteLine("There is only one ice cream object within the order. You cannot have zero ice creams in your order");
+                        Console.WriteLine("There is only one ice cream object within the order. You cannot have zero ice cream in your order");
                     }
                 }
                 else
@@ -105,8 +95,8 @@ public class Order
         }
     }
     
- // Not sure if working, need to test
-public double CalculateTotal()
+    // Not sure if working, need to test
+    public double CalculateTotal()
     {
         double total = 0;
         foreach (IceCream ic in IceCreamList)
@@ -117,6 +107,7 @@ public double CalculateTotal()
         return total;
     }
 
+    // Need to check for feature 2
     public override string ToString()
     {
         return $"ID: {Id} | Time Received: {TimeReceived:MM/dd/yyyy} | IceCream: {string.Join(", ", IceCreamList)} ";
@@ -129,12 +120,14 @@ public double CalculateTotal()
          bool whileloop = true;
                     while (whileloop)
                     {
+                        // asking for the new option
                         Console.Write("Please select a new option (Cup, Cone, Waffle): ");
                         string modifyoption = Console.ReadLine().ToLower();
                         
                         // this list is to check if the user inputs the correct option 
                         List<string> icecreamoption = new List<string> { "cup", "cone", "waffle" };
-
+                        
+                        // checking if the option they entered is the same as their current option
                         if (modifyoption == chosenIceCream.Option.ToLower())
                         {
                             Console.WriteLine($"Your ice cream is already a {modifyoption}. Please input another option.");
@@ -145,6 +138,7 @@ public double CalculateTotal()
                         }
                         else
                         {
+                            // editing the option of the option of the ice cream
                             IceCream newicecream = null;
                             if (modifyoption == "cup")
                             {
@@ -152,14 +146,9 @@ public double CalculateTotal()
                             }
                             else if (modifyoption == "cone")
                             {
-                                Console.WriteLine("That will be an extra $2.\nDo you want your cone to be dipped?[Y/N]: ");
-                                string? input2 = Console.ReadLine()?.ToLower();
-                                if (!(input2 == "y" || input2 == "n"))
-                                {
-                                    Console.WriteLine("Invalid input. Please enter 'Y' or 'N'.");
-                                }
-                                
-                                if (input2 == "y")
+                                // checking if they want their ice cream cone to be dipped or not
+                                bool yesorno = Program.checkYesNoInput("That will be an extra $2.Do you want your cone to be dipped?[Y/N]: ");
+                                if (yesorno == true)
                                 {
                                     newicecream = new Cone(modifyoption, chosenIceCream.Scoops, chosenIceCream.Flavours,
                                         chosenIceCream.Toppings, true);
@@ -171,9 +160,9 @@ public double CalculateTotal()
                             }
                             else if (modifyoption == "waffle")
                             {
-                                string waffleflavour =
-                                    Program.CheckUserInput( new List<string>() { "original", "red velvet", "charcoal", "pandan"},
-                                        "Choose a waffle flavour: ");
+                                // askinf for the waffleFlavour they want
+                                string waffleflavour = Program.CheckUserInput( new List<string>() { "original", "red velvet", "charcoal", "pandan"},
+                                        "Choose a waffle flavour[any flavour other than original will be additional $3]: ");
                                 newicecream = new Waffle(modifyoption, chosenIceCream.Scoops, chosenIceCream.Flavours,
                                     chosenIceCream.Toppings, waffleflavour);
 
@@ -181,9 +170,9 @@ public double CalculateTotal()
                             if (newicecream != null)
                             {
                                 IceCreamList[icecreamopt - 1] = newicecream; // replacing the old ice cream with a new ice cream
-                                Console.WriteLine($"The option of your ice cream has changed to a {newicecream.Option}");
+                                whileloop = false; // break the while loop
+                                Console.WriteLine($"The option of your ice cream has changed to a {newicecream.Option}"); 
                             } 
-                            whileloop = false; // break the while loop
                         }
                     }
     }
@@ -204,12 +193,12 @@ public double CalculateTotal()
                     int scoops = Program.CheckIntInput("Enter number of scoops(1-3): ", 1, 3);
                     Program.GetFlavours(scoops);
                     List<Flavour> flavours = Program.GetFlavours(scoops);
-                    IceCreamList[icecreamopt - 1].Scoops = scoops;
-                    IceCreamList[icecreamopt - 1].Flavours = flavours;
+                    IceCreamList[icecreamopt - 1].Scoops = scoops; // changing the number of scoops
+                    IceCreamList[icecreamopt - 1].Flavours = flavours; // changing the flavours of the scoops 
                     break;
                 case 2:
                     List<Topping> toppings = Program.GetToppings();
-                    IceCreamList[icecreamopt - 1].Toppings = toppings;
+                    IceCreamList[icecreamopt - 1].Toppings = toppings; // changing the toppings
                     break;
                 case 3:
                     whileloop = false;
