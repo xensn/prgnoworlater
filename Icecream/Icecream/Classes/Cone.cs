@@ -39,6 +39,6 @@ public class Cone:IceCream
    
    public override string ToString()
    {
-      return $"{base.ToString()} | Price: {CalculatePrice()} | Dipped: {Dipped.GetType()}";
+      return $"{base.ToString()} | Dipped: {Dipped} | Price: {CalculatePrice()}";
    }
 }

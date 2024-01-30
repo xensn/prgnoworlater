@@ -408,9 +408,17 @@ namespace Icecream
                                 chosenOrder.AddIceCream(icecream);
                                 break;
                             case 3:
-                                Console.Write("Please select an ice cream that you want to delete");
-                                int icecreamtodelete = Convert.ToInt32(Console.ReadLine());
-                                chosenOrder.DeleteIceCream(icecreamtodelete);
+                                // not allowing them to delete the ice cream if there is only one ice cream left in the current order
+                                if (chosenOrder.IceCreamList.Count != 1)
+                                {
+                                    Console.Write("Please select an ice cream that you want to delete: ");
+                                    int icecreamtodelete = Convert.ToInt32(Console.ReadLine());
+                                    chosenOrder.DeleteIceCream(icecreamtodelete);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("You cannot remove this ice cream as there is only one ice cream in this order!");
+                                }
                                 break;
                             case 4:
                                 whileloop = false;
@@ -429,35 +437,62 @@ namespace Icecream
             {
                 Order chosenOrder;
                 Order dequeueOrder;
+                Customer? chosenCustomer = null;
                 
                 // Check if there are any any gold queue members.
                 if (goldOrderQueue.Count > 0)
                 {
                     // Dequeue and store the order we are handling in dequeueOrder
                     dequeueOrder = goldOrderQueue.Dequeue();
-                    
-                    // Find the correct order and the customer who ordered in the store dictionary.
-                    foreach (KeyValuePair<int, Order> kvp in customerOrder)
-                    {
-                        if (dequeueOrder.Id == kvp.Value.Id)
-                        {
-                            chosenOrder = kvp.Value;
-                            chosenCustomer = ChooseCustomer(Convert.ToString(kvp.Key));
-                            break;
-                        }
-                    }
                 }
-
                 else
                 {
                     dequeueOrder = orderQueue.Dequeue();
                 }
                 
-                // Have fun dhava
+                // Find the correct order and the customer who ordered in the store dictionary.
+                foreach (KeyValuePair<int, Order> kvp in customerOrder)
+                {
+                    if (dequeueOrder.Id == kvp.Value.Id)
+                    {
+                        chosenOrder = kvp.Value;
+                        chosenCustomer = ChooseCustomer(Convert.ToString(kvp.Key));
+                        break;
+                    }
+                }
+                
+                // displaying all the ice creams within the order
+                Console.WriteLine("Total Bill Amount" +
+                                  "\n-------------------------------------------------------------------------------------------------");
+                double totalprice = 0;
+                IceCream expIceCream = dequeueOrder.IceCreamList[0];
+                foreach (IceCream icecream in dequeueOrder.IceCreamList)
+                {
+                    totalprice += icecream.CalculatePrice();
+                    Console.WriteLine($"{dequeueOrder.IceCreamList.IndexOf(icecream) + 1}. {icecream.ToString()}");
+                    // checking for the most expensive icecream in the current order
+                    if (expIceCream.CalculatePrice() < icecream.CalculatePrice())
+                    {
+                        expIceCream = icecream;
+                    }
+                }
+                Console.WriteLine(
+                    "-------------------------------------------------------------------------------------------------");
+                Console.WriteLine($"Total Price: {totalprice:C2}"); // displaying the total bill 
+                Console.WriteLine($"Membership status: {chosenCustomer.Rewards.Tier} Points: {chosenCustomer.Rewards.Points}"); // displaying the membership status and points
+
+                double finalbill = 0;
+                //checking if it's the customer's birthday and then checking if their punchcard is finished 
+                if (chosenCustomer.isBirthday() == true)
+                {
+                    
+                }
+                else
+                {
+                    
+                }
+
             }
-            
-            
-            
             // Advanced Feature (b)
             void TotalPriceBreakdown()
             {

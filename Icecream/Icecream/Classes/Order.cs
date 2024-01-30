@@ -28,34 +28,35 @@ public class Order
             try 
             {
                 // making sure the customer will only input what is within their ice cream list
-                if (1 <= icecreamopt && icecreamopt <= IceCreamList.Count() + 1) 
+                if (1 <= icecreamopt && icecreamopt <= IceCreamList.Count()) 
                 {
                     // asking if they want to change their option 
                     bool yesorno = Program.checkYesNoInput("Do you want to change the option of the ice cream selected[Y/N]?: ");
-                    if (yesorno = true)
+                    if (yesorno == true)
                     {
                         // changing the option of the ice cream
                         ChangeIceCreamOption(icecreamopt);
                     }
                     else
                     {
-                        Console.Write($"The option of your ice cream will remain as a {IceCreamList[icecreamopt-1].Option}");
+                        Console.WriteLine($"The option of your ice cream will remain as a {IceCreamList[icecreamopt-1].Option}.");
                     }
+                    
                     // changing the scoops and flavour and toppings 
                     ChangingScoopsFlavourToppings(icecreamopt);
+                    break;
                 }
                 else
                 {
                     throw new Exception("Please enter a correct ice cream within your current order to edit!");
                 }
-                
-                break;
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                Console.Write("Please select an ice cream to modify: ");
+                icecreamopt = Convert.ToInt32(Console.ReadLine());
             }
-            
         }
     }
 
@@ -73,17 +74,10 @@ public class Order
                 // checking the ice cream they want to delete is within the current order
                 if (1 <= icecreamtodelete && icecreamtodelete <= IceCreamList.Count() + 1)
                 {
-                    // not allowing them to delete the ice cream if there is only one ice cream left in the current order
-                    if(!(IceCreamList.Count == 1))
-                    {
                         IceCreamList.RemoveAt(icecreamtodelete - 1);
-                    }
-                    else
-                    {
-                        Console.WriteLine("There is only one ice cream object within the order. You cannot have zero ice cream in your order");
-                    }
+                        break;
                 }
-                else
+                else 
                 {
                     throw new Exception("Please enter a correct ice cream within your current order to delete!");
                 }
@@ -171,7 +165,7 @@ public class Order
                             {
                                 IceCreamList[icecreamopt - 1] = newicecream; // replacing the old ice cream with a new ice cream
                                 whileloop = false; // break the while loop
-                                Console.WriteLine($"The option of your ice cream has changed to a {newicecream.Option}"); 
+                                Console.WriteLine($"The option of your ice cream has changed to a {newicecream.Option}."); 
                             } 
                         }
                     }
@@ -186,7 +180,7 @@ public class Order
             int whattomodify = Program.CheckIntInput("[1] The number of scoops & the flavours of the ice cream" +
                                                         "\n[2] The Toppings added to the ice cream" +
                                                         "\n[3] Exit" +
-                                                        "\nPlease pick what you want to modify in your ice cream", 1, 3);
+                                                        "\nPlease pick what you want to modify in your ice cream: ", 1, 3);
             switch (whattomodify)
             {
                 case 1:
