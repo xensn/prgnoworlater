@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Formats.Asn1;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 
@@ -12,6 +13,7 @@ namespace Icecream
     {
         static void Main(string[] args)
         {
+            
             
             /*// list for the customer objects from the .csv file 
             List<Customer> customers = new List<Customer>();
@@ -25,6 +27,8 @@ namespace Icecream
             Queue<Order> goldOrderQueue = new Queue<Order>();
             Dictionary<int, Order> customerOrder = new Dictionary<int, Order>();
             Customer? chosenCustomer;
+            
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(CancelKeyPress_Handler);
             
                 // Select them option
                 while (true)
@@ -539,6 +543,79 @@ namespace Icecream
             }
 
             // Additional Methods
+            // If user terminate process in the middle, it will save whatever in customerOrder dictionary into the orders.csv
+            void CancelKeyPress_Handler(object sender, ConsoleCancelEventArgs e)
+            {
+                Console.WriteLine("Break");
+                e.Cancel = true;
+                
+                using (StreamWriter sw = File.AppendText("orders.csv"))
+                {
+                    foreach (KeyValuePair<int, Order> kvp in customerOrder)
+                    {
+                        foreach (IceCream ic in kvp.Value.IceCreamList)
+                        {
+                            var line = new StringBuilder();
+                            line.Append($"{kvp.Value.Id},{kvp.Key},{kvp.Value.TimeReceived},{kvp.Value.TimeFulfilled},{ic.Option},{ic.Scoops}");
+                            
+                            switch (ic.Option.ToLower())
+                            {
+                                case "cup":
+                                {
+                                    Cup tempCup = (Cup)ic;
+                                    line.Append(",,");
+                                    break;
+                                }
+                                case "waffle":
+                                {
+                                    Waffle tempWaffle = (Waffle)ic;
+                                    line.Append($",,{tempWaffle.WaffleFlavour}");
+                                    break;
+                                }
+                                case "cone":
+                                {
+                                    Cone tempCone = (Cone)ic;
+                                    line.Append($",{tempCone.Dipped.ToString().ToUpper()},");
+                                    break;
+                                }
+                            }
+                            
+                            // Adding Flavours now
+                            for (int i = 0; i < 3; i++)
+                            {
+                                if (i < ic.Flavours.Count)
+                                {
+                                    line.Append($",{ic.Flavours[i].Type},");  
+                                }
+                                else
+                                {
+                                    line.Append(",");
+                                }
+                            }
+                            
+                            //  Adding Toppings now
+                            for (int i = 0; i < 4; i++)
+                            {
+                                if (i < ic.Toppings.Count)
+                                {
+                                    line.Append($"{ic.Toppings[i].Type},");
+                                }
+                                else
+                                {
+                                    line.Append(",");
+                                }
+                            }
+                            sw.WriteLine(line);
+                        }
+                    }
+                }
+                
+                Environment.Exit(0);
+            }
+            
+            
+            
+            
             // Choose which customer to append data inside.
             Customer? ChooseCustomer(string id)
             {
@@ -685,20 +762,20 @@ namespace Icecream
                     }
                 }
                 
-                if (line[4] == "Cup")
+                if (line[4].ToLower() == "cup")
                 {
                     IceCream tempIceCream = new Cup(line[4], Convert.ToInt32(line[5]), flavourList, toppingList);
                     return tempIceCream;
                 }
                 
-                else if (line[4] == "Cone")
+                else if (line[4].ToLower() == "cone")
                 {
                     bool.TryParse(line[6], out bool result);
                     IceCream tempIceCream = new Cone(line[4], Convert.ToInt32(line[5]), flavourList, toppingList, result);
                     return tempIceCream;
                 }
                 
-                else if (line[4] == "Waffle")
+                else if (line[4].ToLower() == "waffle")
                 {
                     Waffle tempIceCream = new Waffle(line[4],Convert.ToInt32(line[5]), flavourList, toppingList, line[7]);
                     return tempIceCream;
