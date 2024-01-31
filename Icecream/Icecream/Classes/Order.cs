@@ -104,7 +104,7 @@ public class Order
     // Need to check for feature 2
     public override string ToString()
     {
-        return $"ID: {Id} | Time Received: {TimeReceived:MM/dd/yyyy} | IceCream: {string.Join(", ", IceCreamList)} ";
+        return $"ID: {Id} | Time Received: {TimeReceived:MM/dd/yyyy}  \n{string.Join("\n", IceCreamList)} ";
     }
     
     // Editing the option of the ice cream

@@ -444,7 +444,7 @@ namespace Icecream
             // Advanced Feature (a)
             void Payment()
             {
-                Order chosenOrder;
+                Order? chosenOrder = null;
                 Order dequeueOrder;
                 Customer? chosenCustomer = null;
                 
@@ -469,16 +469,20 @@ namespace Icecream
                         break;
                     }
                 }
-                
+
+                Console.WriteLine($"Member name:{chosenCustomer.Name}");
                 // displaying all the ice creams within the order
                 Console.WriteLine("Total Bill Amount" +
                                   "\n-------------------------------------------------------------------------------------------------");
                 double totalprice = 0;
+                int noofpunches = 0;
                 IceCream expIceCream = dequeueOrder.IceCreamList[0];
                 foreach (IceCream icecream in dequeueOrder.IceCreamList)
                 {
                     totalprice += icecream.CalculatePrice();
+                    noofpunches += 1;
                     Console.WriteLine($"{dequeueOrder.IceCreamList.IndexOf(icecream) + 1}. {icecream.ToString()}");
+                    
                     // checking for the most expensive icecream in the current order
                     if (expIceCream.CalculatePrice() < icecream.CalculatePrice())
                     {
@@ -488,19 +492,64 @@ namespace Icecream
                 Console.WriteLine(
                     "-------------------------------------------------------------------------------------------------");
                 Console.WriteLine($"Total Price: {totalprice:C2}"); // displaying the total bill 
-                Console.WriteLine($"Membership status: {chosenCustomer.Rewards.Tier} Points: {chosenCustomer.Rewards.Points}"); // displaying the membership status and points
-
-                double finalbill = 0;
-                //checking if it's the customer's birthday and then checking if their punchcard is finished 
+                Console.WriteLine($"Membership status: {chosenCustomer.Rewards.Tier} | Points: {chosenCustomer.Rewards.Points}"); // displaying the membership status and points
+                
+                //checking if it's the customer's birthday 
                 if (chosenCustomer.isBirthday() == true)
                 {
-                    
+                    dequeueOrder.IceCreamList.Remove(expIceCream); //removing the expensive icecream from the order so that it will not be included in the final bill
                 }
-                else
+                
+                // checking if the punchcard is completed and setting it to 0 if it is 
+                if (chosenCustomer.Rewards.PunchCard == 10)
                 {
-                    
+                    dequeueOrder.IceCreamList.RemoveAt(0); // removing the first icecream from the order so that it will not be included in the final bill
+                    chosenCustomer.Rewards.PunchCard = 0;
+                }
+                
+                // calculate the final price 
+                double finalbill = 0;
+                foreach (IceCream icecream in dequeueOrder.IceCreamList)
+                {
+                    finalbill += icecream.CalculatePrice();
+                }
+                
+                // checking pointcard status and checking if they can redeem points
+                if (chosenCustomer.Rewards.Tier != "Ordinary")
+                {
+                    Console.Write("Number of Points to redeemed: ");
+                    int pointsToRedeem = Convert.ToInt32(Console.ReadLine());
+                    double? discount = chosenCustomer.Rewards.RedeemPoints(pointsToRedeem);
+                    if (discount != null)
+                    {
+                        finalbill -= discount.Value;
+                        Console.WriteLine("Price Deducted: {0}", discount);
+                        Console.WriteLine("Remaining Points: {0}", chosenCustomer.Rewards.Points);
+                    }
+                    else
+                    {
+                        Console.WriteLine("You have no points left to be redeemed!");
+                    }
+                }
+                Console.WriteLine($"The final bill is {finalbill:C2}"); // final bill displayed 
+                Console.WriteLine("You can press any key to make payment");
+                
+                Console.ReadKey(); // waiting for the customer to press any key they want to make payment
+                
+                for(int i = 1; i<= noofpunches; i++)
+                {
+                    chosenCustomer.Rewards.Punch(); // punching the card for every ice cream in the order
                 }
 
+                if (chosenCustomer.Rewards.PunchCard >= 10)
+                {
+                    chosenCustomer.Rewards.PunchCard = 10; // setting the punch card back to 10 if the number of punches beyond 10
+                }
+                
+                int pointstoadd = Convert.ToInt32(Math.Floor(finalbill * 0.72)); // calculating the points
+                chosenCustomer.Rewards.AddPoints(pointstoadd); // adding the points and upgrading the member status accordingly
+                
+                chosenOrder.TimeFulfilled = DateTime.Now; //marking the order fulfilled
             }
             // Advanced Feature (b)
             void TotalPriceBreakdown()

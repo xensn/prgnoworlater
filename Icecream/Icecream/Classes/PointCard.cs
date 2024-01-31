@@ -18,11 +18,11 @@ public class PointCard
         PunchCard = punchCard;
     }
 
-    public void AddPoints(int price)
+    public void AddPoints(int points)
     {
-        Points += Convert.ToInt32(Math.Floor(price * 0.72));
+        Points += points;
         
-        if (Points >= 100 && Tier != "Gold" )
+        if (Points >= 100 && Tier != "Gold")
         {
             Tier = "Gold";
         }
@@ -33,37 +33,45 @@ public class PointCard
         }
     }
 
-    public void RedeemPoints(int price)
+    public double? RedeemPoints(int pointsToRedeem)
     {
-        if (Tier != "Ordinary")
-        {
             if (Points > 0)
             {
-                Console.Write("Number of Points to redeemed: ");
-                int pointsToRedeem = Convert.ToInt32(Console.ReadLine());
-                double discount = pointsToRedeem * 0.02;
+                while (true)
+                {
+                    try
+                    {
+                        if (Points >= pointsToRedeem)
+                        {
+                            double discount = pointsToRedeem * 0.02;
 
-                Points = -pointsToRedeem;   
-                
-                Console.WriteLine("Price Deducted: {0}",discount);
-                Console.WriteLine("After discount price: {0}",price-discount );
-                Console.WriteLine("Remaining Points: {0}", Points);
+                            Points -= pointsToRedeem;
+                            
+                            return discount;
+                            break;
+                        }
+                        else
+                        {
+                            throw new Exception($"You can only redeem up to {Points} points!");
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                        Console.Write("Number of Points to redeemed: ");
+                        pointsToRedeem = Convert.ToInt32(Console.ReadLine());
+                    }
+                }
             }
-        }
+            else
+            {
+                return null;
+            }
     }
 
     public void Punch()
     {
-        if (PunchCard == 10)
-        {
-            Console.WriteLine("Your 11th Ice-cream is free.");
-            PunchCard = 10; 
-        }
-
-        else
-        {
-            PunchCard += 1;
-        }
+        PunchCard += 1;
     }
 
     public override string ToString()
