@@ -92,6 +92,7 @@ namespace Icecream
 
                     else
                     {
+                        WriteDataToOrders();
                         break;
                     }
                 }
@@ -260,18 +261,22 @@ namespace Icecream
 
                 ordered.AddIceCream(iceCream);
 
+                bool anotherOrder = true;
                 while (true)
                 {
 
-                    bool anotherO = checkYesNoInput("Would you like to add another ice cream to the order?(y/n): ");
-                    if (anotherO)
+                    anotherOrder = checkYesNoInput("Would you like to add another ice cream to the order?(y/n): ");
+                    if (anotherOrder)
                     {
                         iceCream = CreateIceCream();
 
                         ordered.AddIceCream(iceCream);
                     }
 
-                    break;
+                    else if (!anotherOrder)
+                    {
+                        break;
+                    }
                 }
 
                 chosenCustomer!.CurrentOrder = ordered;
@@ -512,6 +517,10 @@ namespace Icecream
                 // Read File
                 foreach (string[] elements in ReadFile("orders.csv"))
                 {
+                    if (elements[3] == "")
+                    {
+                        continue;
+                    }
                     // Find the date of the line
                     DateTime dateFulfilled = DateTime.Parse(elements[3]);
                     
@@ -546,9 +555,18 @@ namespace Icecream
             // If user terminate process in the middle, it will save whatever in customerOrder dictionary into the orders.csv
             void CancelKeyPress_Handler(object sender, ConsoleCancelEventArgs e)
             {
-                Console.WriteLine("Break");
+                Console.WriteLine("Logging all data.");
                 e.Cancel = true;
                 
+                WriteDataToOrders();
+                
+                Environment.Exit(0);
+            }
+            
+            
+            // Format IceCream Object to append into orders.csv
+            void WriteDataToOrders()
+            {
                 using (StreamWriter sw = File.AppendText("orders.csv"))
                 {
                     foreach (KeyValuePair<int, Order> kvp in customerOrder)
@@ -556,7 +574,18 @@ namespace Icecream
                         foreach (IceCream ic in kvp.Value.IceCreamList)
                         {
                             var line = new StringBuilder();
-                            line.Append($"{kvp.Value.Id},{kvp.Key},{kvp.Value.TimeReceived},{kvp.Value.TimeFulfilled},{ic.Option},{ic.Scoops}");
+                            line.Append($"{kvp.Value.Id},{kvp.Key},{kvp.Value.TimeReceived.ToString("dd/MM/yyyy hh:MM")}");
+
+                            if (kvp.Value.TimeFulfilled == null)
+                            {
+                                line.Append(",");
+                            }
+                            else
+                            {
+                                line.Append($",{kvp.Value.TimeFulfilled}");
+                            }
+
+                            line.Append($",{ic.Option},{ic.Scoops}");
                             
                             switch (ic.Option.ToLower())
                             {
@@ -585,11 +614,11 @@ namespace Icecream
                             {
                                 if (i < ic.Flavours.Count)
                                 {
-                                    line.Append($",{ic.Flavours[i].Type},");  
+                                    line.Append($",{ic.Flavours[i].Type}");  
                                 }
                                 else
                                 {
-                                    line.Append(",");
+                                    line.Append(",,");
                                 }
                             }
                             
@@ -598,22 +627,18 @@ namespace Icecream
                             {
                                 if (i < ic.Toppings.Count)
                                 {
-                                    line.Append($"{ic.Toppings[i].Type},");
+                                    line.Append($",{ic.Toppings[i].Type}");
                                 }
                                 else
                                 {
-                                    line.Append(",");
+                                    line.Append(",,");
                                 }
                             }
                             sw.WriteLine(line);
                         }
                     }
                 }
-                
-                Environment.Exit(0);
             }
-            
-            
             
             
             // Choose which customer to append data inside.
@@ -675,36 +700,8 @@ namespace Icecream
 
                 return null;
             }
-
-            // Editing the customer.csv data
-            void EditCustomerFile(Customer c)
-            {
-                // Generates a temporary file
-                string tempFile = Path.GetTempFileName();
-
-                // Read the pointcard.csv and append all the lines is not changed to the temp file
-                using (var sr = new StreamReader("customers.csv"))
-                using (StreamWriter sw = File.AppendText(tempFile))
-                {
-                    string s;
-
-                    while ((s = sr.ReadLine()) != null)
-                    {
-                        string[] lines = s.Split(',');
-                        // Check which user's data to be changed
-                        if (lines[0] != Convert.ToString(c.Memberid))
-                        {
-                            sw.WriteLine(s);
-                        }
-                    }
-
-                    sw.WriteLine($"{c.Name},{c.Memberid},{c.Dob},{c.Rewards.Tier},{c.Rewards.Points},{c.Rewards.PunchCard}");
-                }
-
-                File.Delete("customers.csv");
-                File.Move(tempFile, "customers.csv");
-            }
             
+            // This is a method to Read all kind of files.
             IEnumerable<string[]> ReadFile(string filename)
             {
                 using (StreamReader sr = new StreamReader(filename))
@@ -728,7 +725,8 @@ namespace Icecream
                     Console.WriteLine(order.ToString());
                 }
             }
-
+            
+            // This is to convert the data in order.csv to a IceCream Class
             IceCream ConvertOrderCsv(string[] line)
             {
                 bool isPremium = false;
@@ -843,7 +841,6 @@ namespace Icecream
                 return toppings;
             }
             
-            // Additional Features
             
             // Check if user input is an existing item on the list (For Option 4)
             public static string CheckUserInput(List<string> menu, string prompt)
