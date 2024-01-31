@@ -1,5 +1,9 @@
 ﻿using System.Drawing;
-
+//========================================================== 
+// Student Number : S10258427D
+// Student Name : Senthilkumar Dhavasre
+// Partner Name : Chia Eason
+//========================================================== 
 
 // Need to check and redo
 namespace Icecream;

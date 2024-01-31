@@ -1,5 +1,9 @@
 ﻿namespace Icecream;
-
+//========================================================== 
+// Student Number : S10258427D
+// Student Name : Senthilkumar Dhavasre
+// Partner Name : Chia Eason
+//========================================================== 
 public abstract class IceCream
 {
     public string Option { get; set; }

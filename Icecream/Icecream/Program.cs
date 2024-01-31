@@ -1,4 +1,4 @@
-﻿﻿using System.Collections;
+﻿using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 using System.Formats.Asn1;
@@ -6,7 +6,11 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
-
+//========================================================== 
+// Student Number : S10258427D
+// Student Name : Senthilkumar Dhavasre
+// Partner Name : Chia Eason
+//========================================================== 
 namespace Icecream
 {
     internal class Program
@@ -284,21 +288,22 @@ namespace Icecream
                 foreach (string[] lines in ReadFile("customers.csv"))
                 {
                     if (Convert.ToString(chosenCustomer.Memberid) != lines[1]) continue;
-                    
-                    if (lines[3] == "Gold")
-                    {
-                        goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
-                        break;
-                    }
-                    
-                    orderQueue.Enqueue(chosenCustomer.CurrentOrder);
                     try
                     {
+                        if (lines[3] == "Gold")
+                        {
+                            goldOrderQueue.Enqueue(chosenCustomer.CurrentOrder);
+                        }
+                        else
+                        {
+                            orderQueue.Enqueue(chosenCustomer.CurrentOrder);
+                        }
                         customerOrder.Add(chosenCustomer.Memberid, ordered);
+                        break;
                     }
                     catch (System.ArgumentException e)
                     {
-                        Console.WriteLine("You have already ordered.Please use option 6 to add ice cream.");
+                        Console.WriteLine("You already have a current order.Please use option 6 to add ice cream.");
                     }
                 }
             }
@@ -529,8 +534,8 @@ namespace Icecream
                     double? discount = chosenCustomer.Rewards.RedeemPoints(pointsToRedeem);
                     if (discount != null)
                     {
-                        finalbill -= discount.Value;
-                        Console.WriteLine("Price Deducted: {0}", discount);
+                        finalbill = finalbill - discount.Value;
+                        Console.WriteLine("Price Deducted: {0:C2}", discount);
                         Console.WriteLine("Remaining Points: {0}", chosenCustomer.Rewards.Points);
                     }
                     else
