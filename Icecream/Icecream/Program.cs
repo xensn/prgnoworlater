@@ -292,7 +292,14 @@ namespace Icecream
                     }
                     
                     orderQueue.Enqueue(chosenCustomer.CurrentOrder);
-                    customerOrder.Add(chosenCustomer.Memberid, ordered);
+                    try
+                    {
+                        customerOrder.Add(chosenCustomer.Memberid, ordered);
+                    }
+                    catch (System.ArgumentException e)
+                    {
+                        Console.WriteLine("You have already ordered.Please use option 6 to add ice cream.");
+                    }
                 }
             }
 
@@ -550,179 +557,216 @@ namespace Icecream
                 chosenCustomer.Rewards.AddPoints(pointstoadd); // adding the points and upgrading the member status accordingly
                 
                 chosenOrder.TimeFulfilled = DateTime.Now; //marking the order fulfilled
-            }
-            // Advanced Feature (b)
-            void TotalPriceBreakdown()
-            {
-                double total = 0;
-                // Prompt user for the year.
-                int year = CheckIntInput("Enter the year: ", 1, DateTime.Now.Year);
-                Console.WriteLine();
                 
-                // List of Months and keep track of the total of each month
-                List<string> monthList = new List<string>(){"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-                List<double> monthTotalList = new List<double>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-                
-                // Read File
-                foreach (string[] elements in ReadFile("orders.csv"))
-                {
-                    if (elements[3] == "")
-                    {
-                        continue;
-                    }
-                    // Find the date of the line
-                    DateTime dateFulfilled = DateTime.Parse(elements[3]);
-                    
-                    // Check if Year matches
-                    if (dateFulfilled.Year == year)
-                    {
-                        // Convert the Line of text to IceCream 
-                        IceCream tempIceCream = ConvertOrderCsv(elements);
-                        
-                        // Loop through 
-                        for (int i = 0; i < 12; i++)
-                        {
-                            if (dateFulfilled.Month == i+1)
-                            {
-                                monthTotalList[i] += tempIceCream.CalculatePrice();
-                            }
-                        }
-                        total += tempIceCream.CalculatePrice();
-                    }
-                }
-                
-                for (int i = 0; i < 12; i++)
-                {
-                    Console.WriteLine($"{monthList[i]} {year}:   ${monthTotalList[i]}");
-                }
-                Console.WriteLine();
-                Console.WriteLine($"Total:     ${total}");
-                
-            }
-
-            // Additional Methods
-            // If user terminate process in the middle, it will save whatever in customerOrder dictionary into the orders.csv
-            void CancelKeyPress_Handler(object sender, ConsoleCancelEventArgs e)
-            {
-                Console.WriteLine("Logging all data.");
-                e.Cancel = true;
-                
-                WriteDataToOrders();
-                
-                Environment.Exit(0);
-            }
-            
-            
-            // Format IceCream Object to append into orders.csv
-            void WriteDataToOrders()
-            {
+                // Append ordered item into the file
                 using (StreamWriter sw = File.AppendText("orders.csv"))
                 {
-                    foreach (KeyValuePair<int, Order> kvp in customerOrder)
+                    foreach (IceCream ic in chosenOrder.IceCreamList)
                     {
-                        foreach (IceCream ic in kvp.Value.IceCreamList)
+                        var line = new StringBuilder();
+                        line.Append($"{chosenOrder.Id},{chosenCustomer.Memberid},{chosenOrder.TimeReceived.ToString("dd/MM/yyyy hh:MM")},{chosenOrder.TimeFulfilled.ToString("dd/MM/yyyy hh:MM")},{ic.Option},{ic.Scoops}");
+                            
+                        switch (ic.Option.ToLower())
                         {
-                            var line = new StringBuilder();
-                            line.Append($"{kvp.Value.Id},{kvp.Key},{kvp.Value.TimeReceived.ToString("dd/MM/yyyy hh:MM")}");
-
-                            if (kvp.Value.TimeFulfilled == null)
+                            case "cup":
                             {
-                                line.Append(",");
+                                Cup tempCup = (Cup)ic;
+                                line.Append(",,");
+                                break;
+                            }
+                            case "waffle":
+                            {
+                                Waffle tempWaffle = (Waffle)ic;
+                                line.Append($",,{tempWaffle.WaffleFlavour}");
+                                break;
+                            }
+                            case "cone":
+                            {
+                                Cone tempCone = (Cone)ic;
+                                line.Append($",{tempCone.Dipped.ToString().ToUpper()},");
+                                break;
+                            }
+                        }
+                            
+                        // Adding Flavours now
+                        for (int i = 0; i < 3; i++)
+                        {
+                            if (i < ic.Flavours.Count)
+                            {
+                                line.Append($",{ic.Flavours[i].Type}");  
                             }
                             else
                             {
-                                line.Append($",{kvp.Value.TimeFulfilled}");
+                                line.Append(",,");
                             }
-
-                            line.Append($",{ic.Option},{ic.Scoops}");
-                            
-                            switch (ic.Option.ToLower())
-                            {
-                                case "cup":
-                                {
-                                    Cup tempCup = (Cup)ic;
-                                    line.Append(",,");
-                                    break;
-                                }
-                                case "waffle":
-                                {
-                                    Waffle tempWaffle = (Waffle)ic;
-                                    line.Append($",,{tempWaffle.WaffleFlavour}");
-                                    break;
-                                }
-                                case "cone":
-                                {
-                                    Cone tempCone = (Cone)ic;
-                                    line.Append($",{tempCone.Dipped.ToString().ToUpper()},");
-                                    break;
-                                }
-                            }
-                            
-                            // Adding Flavours now
-                            for (int i = 0; i < 3; i++)
-                            {
-                                if (i < ic.Flavours.Count)
-                                {
-                                    line.Append($",{ic.Flavours[i].Type}");  
-                                }
-                                else
-                                {
-                                    line.Append(",,");
-                                }
-                            }
-                            
-                            //  Adding Toppings now
-                            for (int i = 0; i < 4; i++)
-                            {
-                                if (i < ic.Toppings.Count)
-                                {
-                                    line.Append($",{ic.Toppings[i].Type}");
-                                }
-                                else
-                                {
-                                    line.Append(",,");
-                                }
-                            }
-                            sw.WriteLine(line);
                         }
-                    }
-                }
-            }
-            
-            
-            // Choose which customer to append data inside.
-            Customer? ChooseCustomer(string id)
-            {
-                if (id != null)
-                {
-                    foreach (string[] lines in ReadFile("customers.csv"))
-                    {
-                        if (lines[1] == Convert.ToString(id))
+                            
+                        //  Adding Toppings now
+                        for (int i = 0; i < 4; i++)
                         {
-                            Customer tempCustomer = new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
-                            PointCard pointCard = new PointCard(Convert.ToInt32(lines[4]), Convert.ToInt32(lines[5]));
-                            pointCard.Tier = lines[3];
-                            tempCustomer.Rewards = pointCard;
-                            return tempCustomer;
+                            if (i < ic.Toppings.Count)
+                            {
+                                line.Append($",{ic.Toppings[i].Type}");
+                            }
+                            else
+                            {
+                                line.Append(",,");
+                            }
+                        }
+                        sw.WriteLine(line);
+                    }
+                }
+
+                customerOrder.Remove(chosenCustomer.Memberid);
+            }
+                // Advanced Feature (b)
+                void TotalPriceBreakdown()
+                {
+                    double total = 0;
+                    // Prompt user for the year.
+                    int year = CheckIntInput("Enter the year: ", 1, DateTime.Now.Year);
+                    Console.WriteLine();
+                
+                    // List of Months and keep track of the total of each month
+                    List<string> monthList = new List<string>(){"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+                    List<double> monthTotalList = new List<double>() { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                
+                    // Read File
+                    foreach (string[] elements in ReadFile("orders.csv"))
+                    {
+                        if (elements[3] == "")
+                        {
+                            continue;
+                        }
+                        // Find the date of the line
+                        DateTime dateFulfilled = DateTime.Parse(elements[3]);
+                    
+                        // Check if Year matches
+                        if (dateFulfilled.Year == year)
+                        {
+                            // Convert the Line of text to IceCream 
+                            IceCream tempIceCream = ConvertOrderCsv(elements);
+                        
+                            // Loop through 
+                            for (int i = 0; i < 12; i++)
+                            {
+                                if (dateFulfilled.Month == i+1)
+                                {
+                                    monthTotalList[i] += tempIceCream.CalculatePrice();
+                                }
+                            }
+                            total += tempIceCream.CalculatePrice();
+                        }
+                    }
+                
+                    for (int i = 0; i < 12; i++)
+                    {
+                        Console.WriteLine($"{monthList[i]} {year}:   ${monthTotalList[i]}");
+                    }
+                    Console.WriteLine();
+                    Console.WriteLine($"Total:     ${total}");
+                
+                }
+
+                // Additional Methods
+                // If user terminate process in the middle, it will save whatever in customerOrder dictionary into the orders.csv
+                void CancelKeyPress_Handler(object sender, ConsoleCancelEventArgs e)
+                {
+                    Console.WriteLine("Logging all data.");
+                    e.Cancel = true;
+                
+                    WriteDataToOrders();
+                
+                    Environment.Exit(0);
+                }
+            
+            
+                // Format IceCream Object to append into orders.csv
+                void WriteDataToOrders()
+                {
+                    using (StreamWriter sw = File.AppendText("orders.csv"))
+                    {
+                        foreach (KeyValuePair<int, Order> kvp in customerOrder)
+                        {
+                            foreach (IceCream ic in kvp.Value.IceCreamList)
+                            {
+                                var line = new StringBuilder();
+                                line.Append($"{kvp.Value.Id},{kvp.Key},{kvp.Value.TimeReceived.ToString("dd/MM/yyyy hh:MM")}");
+
+                                if (kvp.Value.TimeFulfilled == null)
+                                {
+                                    line.Append(",");
+                                }
+                                else
+                                {
+                                    line.Append($",{kvp.Value.TimeFulfilled}");
+                                }
+
+                                line.Append($",{ic.Option},{ic.Scoops}");
+                            
+                                switch (ic.Option.ToLower())
+                                {
+                                    case "cup":
+                                    {
+                                        Cup tempCup = (Cup)ic;
+                                        line.Append(",,");
+                                        break;
+                                    }
+                                    case "waffle":
+                                    {
+                                        Waffle tempWaffle = (Waffle)ic;
+                                        line.Append($",,{tempWaffle.WaffleFlavour}");
+                                        break;
+                                    }
+                                    case "cone":
+                                    {
+                                        Cone tempCone = (Cone)ic;
+                                        line.Append($",{tempCone.Dipped.ToString().ToUpper()},");
+                                        break;
+                                    }
+                                }
+                            
+                                // Adding Flavours now
+                                for (int i = 0; i < 3; i++)
+                                {
+                                    if (i < ic.Flavours.Count)
+                                    {
+                                        line.Append($",{ic.Flavours[i].Type}");  
+                                    }
+                                    else
+                                    {
+                                        line.Append(",,");
+                                    }
+                                }
+                            
+                                //  Adding Toppings now
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    if (i < ic.Toppings.Count)
+                                    {
+                                        line.Append($",{ic.Toppings[i].Type}");
+                                    }
+                                    else
+                                    {
+                                        line.Append(",,");
+                                    }
+                                }
+                                sw.WriteLine(line);
+                            }
                         }
                     }
                 }
-                
-                while (true)
+            
+            
+                // Choose which customer to append data inside.
+                Customer? ChooseCustomer(string id)
                 {
-                    // Data validation for customer id
-                    try
+                    if (id != null)
                     {
-                        Console.Write("Enter customer id: ");
-                        id = Console.ReadLine();
-
-                        // Open file to find customers
-                        bool idExist = false;
                         foreach (string[] lines in ReadFile("customers.csv"))
                         {
                             if (lines[1] == Convert.ToString(id))
                             {
-                                idExist = true;
                                 Customer tempCustomer = new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
                                 PointCard pointCard = new PointCard(Convert.ToInt32(lines[4]), Convert.ToInt32(lines[5]));
                                 pointCard.Tier = lines[3];
@@ -730,106 +774,130 @@ namespace Icecream
                                 return tempCustomer;
                             }
                         }
-
-                        // Not existing, it will give user an error
-                        if (!idExist)
+                    }
+                
+                    while (true)
+                    {
+                        // Data validation for customer id
+                        try
                         {
-                            throw new Exception("Customer entered does not valid.");
+                            Console.Write("Enter customer id: ");
+                            id = Console.ReadLine();
+
+                            // Open file to find customers
+                            bool idExist = false;
+                            foreach (string[] lines in ReadFile("customers.csv"))
+                            {
+                                if (lines[1] == Convert.ToString(id))
+                                {
+                                    idExist = true;
+                                    Customer tempCustomer = new Customer(lines[0], Convert.ToInt32(lines[1]), DateTime.Parse(lines[2]));
+                                    PointCard pointCard = new PointCard(Convert.ToInt32(lines[4]), Convert.ToInt32(lines[5]));
+                                    pointCard.Tier = lines[3];
+                                    tempCustomer.Rewards = pointCard;
+                                    return tempCustomer;
+                                }
+                            }
+
+                            // Not existing, it will give user an error
+                            if (!idExist)
+                            {
+                                throw new Exception("Customer entered does not valid.");
+                            }
+
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                
+                
+
+                    return null;
+                }
+            
+                // This is a method to Read all kind of files.
+                IEnumerable<string[]> ReadFile(string filename)
+                {
+                    using (StreamReader sr = new StreamReader(filename))
+                    {
+                        string? s = sr.ReadLine();
+
+                        while ((s = sr.ReadLine()) != null)
+                        {
+                            string[] lines = s.Split(',');
+
+                            yield return lines;
+                        }
+                    }
+                }
+            
+                // Listing the orders in both queue and list
+                void ListOrder(IEnumerable<Order> orderqueue)
+                {
+                    foreach (Order order in orderqueue)
+                    {
+                        Console.WriteLine(order.ToString());
+                    }
+                }
+            
+                // This is to convert the data in order.csv to a IceCream Class
+                IceCream ConvertOrderCsv(string[] line)
+                {
+                    bool isPremium = false;
+                    List<Flavour> flavourList = new List<Flavour>();
+                    List<Topping> toppingList = new List<Topping>();
+                    // Create Flavour Object
+                    for (int i = 8; i < 11; i++)
+                    {
+                    
+                        if (line[i] == "Ube" || line[i] == "Sea Salt" || line[i] == "Durian")
+                        {
+                            isPremium = true;
+                        }
+                    
+                        if (line[i] != "")
+                        {
+                            Flavour tempFlavour = new Flavour(line[i], isPremium, 1);
+                        
+                            flavourList.Add(tempFlavour);
                         }
 
-                        break;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
                 
+                    // Create Topping Object
+                    for (int i = 11; i < 15; i++)
+                    {
+                        if (line[i] != "")
+                        {
+                            Topping tempTopping = new Topping(line[i]);
+                            toppingList.Add(tempTopping);
+                        }
+                    }
                 
-
-                return null;
-            }
-            
-            // This is a method to Read all kind of files.
-            IEnumerable<string[]> ReadFile(string filename)
-            {
-                using (StreamReader sr = new StreamReader(filename))
-                {
-                    string? s = sr.ReadLine();
-
-                    while ((s = sr.ReadLine()) != null)
+                    if (line[4].ToLower() == "cup")
                     {
-                        string[] lines = s.Split(',');
-
-                        yield return lines;
+                        IceCream tempIceCream = new Cup(line[4], Convert.ToInt32(line[5]), flavourList, toppingList);
+                        return tempIceCream;
                     }
-                }
-            }
-            
-            // Listing the orders in both queue and list
-            void ListOrder(IEnumerable<Order> orderqueue)
-            {
-                foreach (Order order in orderqueue)
-                {
-                    Console.WriteLine(order.ToString());
-                }
-            }
-            
-            // This is to convert the data in order.csv to a IceCream Class
-            IceCream ConvertOrderCsv(string[] line)
-            {
-                bool isPremium = false;
-                List<Flavour> flavourList = new List<Flavour>();
-                List<Topping> toppingList = new List<Topping>();
-                // Create Flavour Object
-                for (int i = 8; i < 11; i++)
-                {
-                    
-                    if (line[i] == "Ube" || line[i] == "Sea Salt" || line[i] == "Durian")
+                
+                    else if (line[4].ToLower() == "cone")
                     {
-                        isPremium = true;
+                        bool.TryParse(line[6], out bool result);
+                        IceCream tempIceCream = new Cone(line[4], Convert.ToInt32(line[5]), flavourList, toppingList, result);
+                        return tempIceCream;
                     }
-                    
-                    if (line[i] != "")
+                
+                    else if (line[4].ToLower() == "waffle")
                     {
-                        Flavour tempFlavour = new Flavour(line[i], isPremium, 1);
-                        
-                        flavourList.Add(tempFlavour);
+                        Waffle tempIceCream = new Waffle(line[4],Convert.ToInt32(line[5]), flavourList, toppingList, line[7]);
+                        return tempIceCream;
                     }
 
+                    return null;
                 }
-                
-                // Create Topping Object
-                for (int i = 11; i < 15; i++)
-                {
-                    if (line[i] != "")
-                    {
-                        Topping tempTopping = new Topping(line[i]);
-                        toppingList.Add(tempTopping);
-                    }
-                }
-                
-                if (line[4].ToLower() == "cup")
-                {
-                    IceCream tempIceCream = new Cup(line[4], Convert.ToInt32(line[5]), flavourList, toppingList);
-                    return tempIceCream;
-                }
-                
-                else if (line[4].ToLower() == "cone")
-                {
-                    bool.TryParse(line[6], out bool result);
-                    IceCream tempIceCream = new Cone(line[4], Convert.ToInt32(line[5]), flavourList, toppingList, result);
-                    return tempIceCream;
-                }
-                
-                else if (line[4].ToLower() == "waffle")
-                {
-                    Waffle tempIceCream = new Waffle(line[4],Convert.ToInt32(line[5]), flavourList, toppingList, line[7]);
-                    return tempIceCream;
-                }
-
-                return null;
-            }
         }
         
          // Public static methods 
