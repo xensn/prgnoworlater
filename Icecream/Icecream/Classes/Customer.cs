@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Transactions;
 
 // Need to check and redo
 
@@ -30,6 +31,21 @@ public class Customer
         // Create new Order
         Random random = new Random();
         int randomId = random.Next();
+
+        using (StreamReader sr = new StreamReader("customers.csv"))
+        {
+            string s = sr.ReadLine();
+
+            while ((s = sr.ReadLine()) != null)
+            {
+                string[] lines = s.Split(",");
+                if(lines[0] == Convert.ToString(randomId))
+                {
+                    randomId = random.Next();
+                }
+            }
+        }
+        
         // I need to check if the id is already an existing order
         return (new Order(randomId, DateTime.Now));
     }
